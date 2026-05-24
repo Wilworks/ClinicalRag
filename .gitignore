@@ -1,0 +1,9 @@
+clinic/
+venv/
+.sixth/
+node_modules/
+.vscode/
+.env
+__pycache__/
+*.pyc
+db.sqlite3
