@@ -330,7 +330,7 @@ AI Engineer · University of Ghana · Accra, Ghana · 2026
 
 `wilfredasumboya@gmail.com`  
 `github.com/Wilworks`  
-`asumboya-folio.lovable.app`
+
 
 ---
 
