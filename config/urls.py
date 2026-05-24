@@ -21,10 +21,18 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # All API endpoints live under /api/
+    # Existing API app
     path("api/", include("api.urls")),
 
+    # Settings profile (GET/PATCH /api/settings/)
+    path("api/settings/", include("settings_profile.urls")),
+
+    # Researcher Canvas (GET/PATCH/DELETE /api/canvas/<session_id>/)
+    path("api/canvas/", include("canvas.urls")),
+
+    # Retrieval orchestrator (POST /api/retrieval/query/, /rerun/)
+    path("api/retrieval/", include("retrieval.urls")),
+
     # Serves the frontend at the root URL.
-    # TemplateView looks for index.html inside your templates/ folder.
     path("", TemplateView.as_view(template_name="index.html"), name="home"),
 ]

@@ -3,383 +3,737 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Evidance — Evidence · Guidance</title>
+  <title>EvidAnce — Clinical Evidence Agent</title>
+  <meta name="description" content="EvidAnce: AI-powered clinical evidence retrieval for West African healthcare contexts. PubMed, Europe PMC, Semantic Scholar, OpenAlex and more."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      /* Premium Obsidian Slate-Navy & Sky-Blue Theme */
-      --ev-dark:#050B14;
-      --ev-dark-2:#090F1C;
-      --ev-dark-3:#0F1829;
-      --ev-dark-4:#172540;
-      --ev-teal:#0EA5E9;
-      --ev-teal-mid:#0284C7;
-      --ev-teal-light:#38BDF8;
-      --ev-teal-faint:rgba(14,165,233,0.08);
-      --ev-text:#F8FAFC;
-      --ev-text-muted:#CBD5E1;
-      --ev-text-dim:#64748B;
-      --ev-border:rgba(14,165,233,0.14);
-      --ev-border-2:rgba(14,165,233,0.28);
-      --sidebar-w:240px;
-      --glass-bg:rgba(11,20,38,0.65);
-      --glass-border:rgba(14,165,233,0.18);
-      --shadow-color:rgba(2,6,23,0.5);
-    }
-    
-    body.light-theme{
-      /* Crisp Clinical Slate Theme */
-      --ev-dark:#F8FAFC;
-      --ev-dark-2:#F1F5F9;
-      --ev-dark-3:#FFFFFF;
-      --ev-dark-4:#E2E8F0;
-      --ev-teal:#0284C7;
-      --ev-teal-mid:#0369A1;
-      --ev-teal-light:#0EA5E9;
-      --ev-teal-faint:rgba(2,132,199,0.06);
-      --ev-text:#0F172A;
-      --ev-text-muted:#334155;
-      --ev-text-dim:#64748B;
-      --ev-border:rgba(2,132,199,0.12);
-      --ev-border-2:rgba(2,132,199,0.25);
-      --glass-bg:rgba(255,255,255,0.75);
-      --glass-border:rgba(2,132,199,0.18);
-      --shadow-color:rgba(15,23,42,0.05);
-    }
-    
-    html,body{height:100%;background:var(--ev-dark);font-family:'Plus Jakarta Sans',sans-serif;color:var(--ev-text);transition:background 0.3s, color 0.3s;-webkit-font-smoothing:antialiased;position:relative}
+    /* ═══════════════════════════════════════════════════════════
+       SECTION 0 — ANTIGRAVITY IDE DARK DESIGN SYSTEM
+       All values reference CSS custom properties.
+       No hardcoded hex values anywhere except in :root definitions.
+    ═══════════════════════════════════════════════════════════ */
+    :root {
+      /* ── Spec §0 Antigravity IDE Dark Palette ── */
+      --bg-base:       #1E1E2E;
+      --bg-surface:    #252537;
+      --bg-elevated:   #2D2D44;
+      --border:        #3A3A55;
+      --text-primary:  #E0E0F0;
+      --text-muted:    #8888AA;
+      --accent:        #7C6AF7;
+      --accent-subtle: rgba(124,106,247,0.12);
+      --success:       #4CAF88;
+      --warning:       #E5A550;
+      --danger:        #E55B5B;
 
-    /* ── Glowing Background Meshes ── */
-    .glow-bg {
-      position: absolute;
-      inset: 0;
+      /* ── Extended tokens ── */
+      --accent-mid:    #5E4FD6;
+      --accent-glow:   rgba(124,106,247,0.22);
+      --surface-hover: rgba(255,255,255,0.04);
+      --glass:         rgba(45,45,68,0.75);
+      --shadow:        rgba(0,0,0,0.45);
+      --sidebar-w:     240px;
+      --canvas-w:      0px;
+    }
+
+    /* ── Light theme override ── */
+    body.light-theme {
+      --bg-base:       #F4F4F8;
+      --bg-surface:    #FFFFFF;
+      --bg-elevated:   #EAEAF5;
+      --border:        #D0D0E0;
+      --text-primary:  #1A1A2E;
+      --text-muted:    #5A5A7A;
+      --accent:        #7C6AF7;
+      --accent-subtle: rgba(124,106,247,0.08);
+      --success:       #2E9D6A;
+      --warning:       #C07820;
+      --danger:        #C04040;
+      --glass:         rgba(255,255,255,0.85);
+      --shadow:        rgba(0,0,0,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg-base);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Ambient glow meshes ── */
+    .glow-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .glow-circle { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.12; mix-blend-mode: screen; }
+    .glow-1 { top: -10%; left: 15%; width: 500px; height: 500px; background: radial-gradient(circle, var(--accent) 0%, transparent 70%); }
+    .glow-2 { bottom: 5%; right: 5%; width: 450px; height: 450px; background: radial-gradient(circle, #4ECDC4 0%, transparent 70%); }
+    body.light-theme .glow-circle { opacity: 0.04; mix-blend-mode: multiply; }
+
+    /* ═══════════════════════════════════════════════════════════
+       SECTION 1 — LAYOUT
+    ═══════════════════════════════════════════════════════════ */
+    .app {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr var(--canvas-w);
+      height: 100vh;
       overflow: hidden;
-      z-index: 0;
-      pointer-events: none;
+      position: relative;
+      z-index: 1;
+      transition: grid-template-columns 0.25s ease;
     }
-    .glow-circle {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(130px);
-      opacity: 0.18;
-      mix-blend-mode: screen;
-    }
-    .glow-1 {
-      top: -10%;
-      left: 15%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, var(--ev-teal) 0%, transparent 70%);
-    }
-    .glow-2 {
-      bottom: 5%;
-      right: 5%;
-      width: 550px;
-      height: 550px;
-      background: radial-gradient(circle, #6366F1 0%, transparent 70%);
-    }
-    body.light-theme .glow-circle {
-      opacity: 0.04;
-      mix-blend-mode: multiply;
-      filter: blur(90px);
-    }
-
-    /* ── Layout ── */
-    .app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;height:100vh;overflow:hidden;transition:grid-template-columns .25s ease;position:relative;z-index:1;background:transparent}
-    .app.collapsed{--sidebar-w:60px}
+    .app.sidebar-collapsed { --sidebar-w: 60px; }
+    .app.canvas-open       { --canvas-w: 320px; }
 
     /* ── Sidebar ── */
-    .sidebar{background:var(--ev-dark-2);border-right:0.5px solid var(--ev-border);display:flex;flex-direction:column;overflow:hidden;transition:width .25s ease, background 0.3s, border 0.3s;width:var(--sidebar-w);box-shadow:4px 0 24px var(--shadow-color)}
-    .sb-logo{padding:14px 14px;border-bottom:0.5px solid var(--ev-border);display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:56px}
-    .logo-mark{display:flex;align-items:center;gap:11px;overflow:hidden;flex:1;min-width:0}
-    .bars{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
-    .bar{height:4px;border-radius:2px;background:var(--ev-teal)}
-    .wordmark{overflow:hidden;transition:opacity .2s}
-    .wordmark-name{font-size:16px;font-weight:700;letter-spacing:.08em;line-height:1;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
-    .wordmark-name .e{color:var(--ev-teal)}
-    .wordmark-name .a{color:var(--ev-text)}
-    .wordmark-sub{font-size:8px;font-weight:600;letter-spacing:.12em;color:var(--ev-text-dim);margin-top:4px;white-space:nowrap}
-    .collapse-btn{width:26px;height:26px;border-radius:6px;border:0.5px solid var(--ev-border-2);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ev-text-dim);flex-shrink:0;transition:all .15s}
-    .collapse-btn:hover{background:var(--ev-dark-4);color:var(--ev-text)}
-    .collapse-btn i{font-size:13px;transition:transform .25s}
-    .app.collapsed .collapse-btn i{transform:rotate(180deg)}
-
-    /* New Chat Button */
-    .new-chat-wrap{padding:12px 10px 4px}
-    .new-chat-btn{width:100%;background:var(--ev-teal-faint);border:0.5px solid var(--ev-border-2);border-radius:77px;padding:10px;font-size:11px;font-weight:600;color:var(--ev-teal-light);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s}
-    .new-chat-btn:hover{background:var(--ev-teal-mid);color:#fff;border-color:var(--ev-teal);box-shadow:0 0 12px rgba(29,158,117,0.25)}
-    .app.collapsed .new-chat-btn span{display:none}
-    .app.collapsed .new-chat-btn{padding:10px 0;border-radius:50%;width:36px;margin:0 auto}
-
-    .sb-section{padding:14px 10px 8px;overflow:hidden}
-    .sb-label{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--ev-text-dim);margin-bottom:8px;padding:0 6px;white-space:nowrap;overflow:hidden;transition:opacity .2s;font-family:'Plus Jakarta Sans',sans-serif}
-    .filter{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:500;color:var(--ev-text-muted);border:0.5px solid transparent;margin-bottom:2px;transition:all .15s;white-space:nowrap;overflow:hidden}
-    .filter:hover{background:var(--ev-dark-4);color:var(--ev-text)}
-    .filter.active{background:var(--ev-dark-4);border-color:var(--ev-border-2);color:var(--ev-teal-light)}
-    .filter i{font-size:14px;flex-shrink:0}
-    .filter-text{overflow:hidden;transition:opacity .2s;white-space:nowrap}
-    .filter-dot{width:5px;height:5px;border-radius:50%;background:var(--ev-teal);margin-left:auto;flex-shrink:0;transition:opacity .2s}
-    .sb-history{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 10px 8px}
-    .sb-history::-webkit-scrollbar{width:3px}
-    .sb-history::-webkit-scrollbar-track{background:transparent}
-    .sb-history::-webkit-scrollbar-thumb{background:var(--ev-border-2);border-radius:2px}
-    .history-item{padding:8px 10px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:500;color:var(--ev-text-muted);line-height:1.4;border:0.5px solid transparent;margin-bottom:2px;transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .history-item:hover{background:var(--ev-dark-4);color:var(--ev-text)}
-    .history-item.active{background:var(--ev-dark-4);border-color:var(--ev-border-2);color:var(--ev-text)}
-    .sb-user{padding:12px;border-top:0.5px solid var(--ev-border);display:flex;align-items:center;gap:9px;flex-shrink:0;overflow:hidden;min-height:52px}
-    .avatar{width:28px;height:28px;border-radius:50%;background:var(--ev-teal-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
-    .user-info{overflow:hidden;transition:opacity .2s;min-width:0;flex:1}
-    .user-name{font-size:11px;font-weight:600;color:var(--ev-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .user-sub{font-size:9px;font-weight:500;color:var(--ev-text-dim);white-space:nowrap}
-    .settings-btn{color:var(--ev-text-dim);cursor:pointer;flex-shrink:0;transition:opacity .2s}
-    .settings-btn i{font-size:14px}
-
-    /* collapsed state hides text */
-    .app.collapsed .wordmark,
-    .app.collapsed .sb-label,
-    .app.collapsed .filter-text,
-    .app.collapsed .filter-dot,
-    .app.collapsed .history-item,
-    .app.collapsed .user-info,
-    .app.collapsed .settings-btn{opacity:0;pointer-events:none}
-    .app.collapsed .sb-history{padding:0 8px 8px}
-    .app.collapsed .filter{justify-content:center;padding:8px 0}
-    .app.collapsed .sb-section{padding:14px 8px 8px}
-
-    /* ── Main panel ── */
-    .main{display:flex;flex-direction:column;overflow:hidden;min-width:0;background:transparent}
-    .topbar{padding:12px 20px;border-bottom:0.5px solid var(--ev-border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;min-height:56px}
-    .topbar-left{display:flex;align-items:center;gap:10px}
-    .page-title{font-size:12px;font-weight:600;color:var(--ev-text);letter-spacing:.08em;font-family:'Plus Jakarta Sans',sans-serif}
-    .badge{font-size:9px;padding:3.5px 9px;border-radius:20px;font-weight:600;letter-spacing:.06em;font-family:'Plus Jakarta Sans',sans-serif}
-    .badge-live{background:var(--ev-teal-faint);color:var(--ev-teal-light);border:0.5px solid var(--ev-teal-mid)}
-    .badge-gray{background:var(--ev-dark-4);color:var(--ev-text-muted);border:0.5px solid var(--ev-border-2)}
-    .topbar-right{display:flex;gap:6px}
-    .icon-btn{width:30px;height:30px;border-radius:7px;border:0.5px solid var(--ev-border-2);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ev-text-muted);transition:all .15s}
-    .icon-btn:hover{background:var(--ev-dark-4);color:var(--ev-text)}
-    .icon-btn i{font-size:14px}
-
-    /* ── Scrollable content ── */
-    .content{flex:1;overflow-y:auto;padding:24px 24px 0}
-    .content::-webkit-scrollbar{width:3px}
-    .content::-webkit-scrollbar-track{background:transparent}
-    .content::-webkit-scrollbar-thumb{background:var(--ev-border-2);border-radius:2px}
-
-    /* ── Empty state ── */
-    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;gap:32px;padding-bottom:30px}
-    .empty-bars{display:flex;flex-direction:column;gap:5px;align-items:center}
-    .empty-bar{height:5px;border-radius:3px;background:var(--ev-teal)}
-    .empty-name{font-size:42px;font-weight:300;letter-spacing:.06em;font-family:'Fraunces',serif;text-shadow:0 0 20px rgba(29,158,117,0.15)}
-    .empty-name .e{color:var(--ev-teal)}
-    .empty-name .a{color:var(--ev-text)}
-    .empty-tagline{font-size:11px;font-weight:400;letter-spacing:.05em;color:var(--ev-text-dim);text-align:center;line-height:2.0}
-    .suggestions{display:flex;flex-direction:column;gap:8px;width:100%;max-width:540px}
-    .sug-label{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--ev-text-dim);text-align:center;margin-bottom:4px}
-    .sug-btn{background:var(--ev-dark-3);border:0.5px solid var(--ev-border-2);border-radius:10px;padding:12px 16px;font-size:11px;font-weight:500;color:var(--ev-text-muted);cursor:pointer;text-align:left;display:flex;align-items:flex-start;gap:12px;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;line-height:1.6}
-    .sug-btn:hover{background:var(--ev-dark-4);border-color:var(--ev-teal);color:var(--ev-text);box-shadow:0 4px 16px rgba(29,158,117,0.08);transform:translateY(-1px)}
-    .sug-btn i{font-size:13px;color:var(--ev-teal);flex-shrink:0;margin-top:2px}
-
-    /* ── Thread turns ── */
-    .results{display:none;flex-direction:column;gap:24px;padding-bottom:24px}
-    .thread-turn{display:flex;flex-direction:column;gap:18px}
-    .thread-q{display:flex;justify-content:flex-end}
-    .thread-q-bubble{background:var(--ev-dark-4);border:0.5px solid var(--ev-border-2);border-radius:14px 14px 3px 14px;padding:12px 16px;font-size:12.5px;color:var(--ev-text);max-width:78%;line-height:1.6;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 4px 12px var(--shadow-color)}
-
-    /* ── Literature Evidence Stream Cards ── */
-    .stream-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;transition:all 0.3s;box-shadow:0 8px 32px var(--shadow-color)}
-    .stream-hdr{padding:11px 16px;border-bottom:0.5px solid var(--ev-border);display:flex;align-items:center;justify-content:space-between}
-    .stream-hdr-left{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--ev-text);letter-spacing:.05em;text-transform:uppercase}
-    .stream-hdr-left i{font-size:13px;color:var(--ev-teal)}
-    .stream-time{font-size:9px;font-weight:600;color:var(--ev-text-dim);font-family:'DM Mono',monospace}
-    
-    .stream-papers{padding:14px;display:flex;flex-direction:column;gap:8px}
-    .searching-pulse{font-size:11.5px;color:var(--ev-text-muted);display:flex;align-items:center;gap:8px}
-    
-    .paper-card{background:var(--ev-dark-3);border:0.5px solid var(--ev-border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:5px;transition:all .2s;text-decoration:none;position:relative}
-    .paper-card:hover{border-color:var(--ev-teal-light);background:var(--ev-dark-4);transform:translateX(2px)}
-    .paper-title{font-size:11.5px;font-weight:600;color:var(--ev-text);line-height:1.45;padding-right:80px}
-    .paper-meta{font-size:9.5px;color:var(--ev-text-muted);display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace}
-    .paper-status{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:600;text-transform:uppercase;font-family:'Plus Jakarta Sans',sans-serif}
-    .status-analyzing{background:var(--ev-teal-faint);color:var(--ev-teal-light)}
-    .status-retrieved{background:rgba(29,158,117,0.15);color:var(--ev-teal-light);border:0.5px solid var(--ev-teal-mid)}
-    .journal-pill{position:absolute;right:14px;top:12px;font-size:8px;padding:2px 7px;border-radius:4px;font-weight:600;background:var(--ev-teal-faint);color:var(--ev-teal-light);border:0.5px solid var(--ev-border-2);font-family:'DM Mono',monospace}
-    
-    .stream-status{padding:12px 14px;border-top:0.5px solid var(--ev-border);font-size:10px;color:var(--ev-text-muted);display:flex;align-items:center;gap:8px}
-
-    /* ── Warning & Cohort Mismatch Banner ── */
-    .warning-banner {
-      background: rgba(239,159,39,0.06);
-      border: 1px solid rgba(239,159,39,0.22);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 16px;
+    .sidebar {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
       display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      box-shadow: 0 4px 20px rgba(239,159,39,0.04);
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.25s ease;
+      width: var(--sidebar-w);
+      box-shadow: 4px 0 24px var(--shadow);
     }
-    .warning-banner i {
-      font-size: 18px;
-      color: #EF9F27;
-      margin-top: 2px;
+    .sb-logo {
+      padding: 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 56px;
+    }
+    .logo-mark { display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1; }
+    .bars { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+    .bar { height: 4px; border-radius: 2px; background: var(--accent); }
+    .wordmark { overflow: hidden; transition: opacity 0.2s; }
+    .wordmark-name { font-size: 16px; font-weight: 700; letter-spacing: 0.08em; white-space: nowrap; }
+    .wordmark-name .ev { color: var(--accent); }
+    .wordmark-sub { font-size: 8px; font-weight: 600; letter-spacing: 0.12em; color: var(--text-muted); margin-top: 3px; white-space: nowrap; }
+    .collapse-btn {
+      width: 26px; height: 26px; border-radius: 6px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .collapse-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .collapse-btn i { font-size: 13px; transition: transform 0.25s; }
+    .app.sidebar-collapsed .collapse-btn i { transform: rotate(180deg); }
+
+    .new-chat-wrap { padding: 12px 10px 4px; }
+    .new-chat-btn {
+      width: 100%; background: var(--accent-subtle);
+      border: 1px solid var(--accent); border-radius: 77px;
+      padding: 9px; font-size: 11px; font-weight: 600;
+      color: var(--accent); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .new-chat-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 16px var(--accent-glow); }
+    .app.sidebar-collapsed .new-chat-btn span { display: none; }
+    .app.sidebar-collapsed .new-chat-btn { width: 36px; height: 36px; border-radius: 50%; padding: 0; margin: 0 auto; }
+
+    .sb-section { padding: 14px 10px 8px; overflow: hidden; }
+    .sb-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 8px; padding: 0 6px; white-space: nowrap; }
+    .sb-history { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 10px 8px; }
+    .sb-history::-webkit-scrollbar { width: 3px; }
+    .sb-history::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .history-item {
+      padding: 8px 10px; border-radius: 8px; cursor: pointer;
+      font-size: 11px; font-weight: 500; color: var(--text-muted);
+      line-height: 1.4; border: 1px solid transparent;
+      margin-bottom: 2px; transition: all 0.15s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .history-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .history-item.active { background: var(--bg-elevated); border-color: var(--accent); color: var(--text-primary); }
+
+    .sb-bottom {
+      padding: 12px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 9px;
+      overflow: hidden; min-height: 52px;
+    }
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-mid), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .user-info { overflow: hidden; flex: 1; min-width: 0; transition: opacity 0.2s; }
+    .user-name { font-size: 11px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-sub { font-size: 9px; color: var(--text-muted); }
+    .settings-link {
+      color: var(--text-muted); cursor: pointer; flex-shrink: 0;
+      transition: color 0.15s;
+    }
+    .settings-link:hover { color: var(--accent); }
+
+    /* Collapsed sidebar hides text */
+    .app.sidebar-collapsed .wordmark,
+    .app.sidebar-collapsed .sb-label,
+    .app.sidebar-collapsed .user-info,
+    .app.sidebar-collapsed .settings-link { opacity: 0; pointer-events: none; }
+    .app.sidebar-collapsed .sb-section { padding: 14px 8px 8px; }
+    .app.sidebar-collapsed .sb-history { padding: 0 8px 8px; }
+    .app.sidebar-collapsed .history-item { opacity: 0; pointer-events: none; }
+
+    /* ── Main ── */
+    .main { display: flex; flex-direction: column; overflow: hidden; min-width: 0; background: transparent; }
+    .topbar {
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0; min-height: 56px;
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .page-title { font-size: 12px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.08em; }
+    .badge {
+      font-size: 9px; padding: 3px 8px; border-radius: 20px;
+      font-weight: 600; letter-spacing: 0.06em;
+    }
+    .badge-live { background: var(--accent-subtle); color: var(--accent); border: 1px solid var(--accent); }
+    .badge-gray { background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+    .topbar-right { display: flex; gap: 6px; align-items: center; }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: 7px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); transition: all 0.15s;
+    }
+    .icon-btn:hover { background: var(--bg-elevated); color: var(--accent); border-color: var(--accent); }
+    .icon-btn i { font-size: 14px; }
+
+    /* ── Content area ── */
+    .content { flex: 1; overflow-y: auto; padding: 24px 24px 0; }
+    .content::-webkit-scrollbar { width: 3px; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100%; gap: 32px; padding-bottom: 30px;
+    }
+    .empty-logo { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .empty-bars { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+    .empty-bar { height: 5px; border-radius: 3px; background: var(--accent); }
+    .empty-name { font-size: 44px; font-weight: 300; letter-spacing: 0.06em; font-family: 'Fraunces', serif; }
+    .empty-name .ev { color: var(--accent); }
+    .empty-tagline { font-size: 11px; color: var(--text-muted); text-align: center; line-height: 2.0; letter-spacing: 0.04em; }
+    .suggestions { display: flex; flex-direction: column; gap: 8px; width: 100%; max-width: 560px; }
+    .sug-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; color: var(--text-muted); text-align: center; margin-bottom: 4px; }
+    .sug-btn {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px;
+      font-size: 11px; font-weight: 500; color: var(--text-muted);
+      cursor: pointer; text-align: left;
+      display: flex; align-items: flex-start; gap: 12px;
+      font-family: inherit; transition: all 0.15s; line-height: 1.6;
+    }
+    .sug-btn:hover { background: var(--bg-elevated); border-color: var(--accent); color: var(--text-primary); transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+    .sug-btn i { font-size: 13px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Thread ── */
+    .results { display: none; flex-direction: column; gap: 24px; padding-bottom: 32px; }
+    .thread-turn { display: flex; flex-direction: column; gap: 14px; }
+    .thread-q { display: flex; justify-content: flex-end; }
+    .thread-q-bubble {
+      background: var(--accent-subtle); border: 1px solid var(--accent);
+      border-radius: 14px 14px 3px 14px; padding: 12px 16px;
+      font-size: 12.5px; color: var(--text-primary);
+      max-width: 78%; line-height: 1.6;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       SPEC §6.1 — REASONING TRACE BAR
+    ═══════════════════════════════════════════════════════════ */
+    .trace-bar {
+      background: rgba(45,45,68,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: height 0.3s ease, opacity 0.3s ease;
+      height: 40px;
+    }
+    .trace-bar.expanded { height: 200px; }
+    .trace-bar.done { opacity: 0; height: 0; pointer-events: none; margin: 0; padding: 0; border: none; }
+    .trace-bar-header {
+      height: 40px; display: flex; align-items: center; gap: 10px;
+      padding: 0 14px; cursor: pointer; flex-shrink: 0;
+    }
+    .trace-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+      animation: tracePulse 1.2s ease-in-out infinite;
       flex-shrink: 0;
     }
-    .warning-banner-text {
-      font-size: 12.5px;
-      line-height: 1.65;
-      color: #FFFFFF;
-      font-family:'Plus Jakarta Sans',sans-serif;
+    .trace-bar.done .trace-dot { animation: none; background: var(--success); }
+    @keyframes tracePulse { 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:0.4; transform:scale(0.8); } }
+    .trace-text {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--text-muted); flex: 1;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    body.light-theme .warning-banner-text {
-      color: #4A2902;
+    .trace-expand-icon { font-size: 11px; color: var(--text-muted); flex-shrink: 0; transition: transform 0.2s; }
+    .trace-bar.expanded .trace-expand-icon { transform: rotate(180deg); }
+    .trace-log {
+      height: calc(200px - 40px); overflow-y: auto;
+      padding: 0 14px 10px;
     }
-    .warning-banner-text strong {
-      color: #EF9F27;
-      font-weight: 700;
+    .trace-log::-webkit-scrollbar { width: 2px; }
+    .trace-log::-webkit-scrollbar-thumb { background: var(--border); }
+    .trace-log-line {
+      font-family: 'DM Mono', monospace; font-size: 10px;
+      color: var(--text-muted); padding: 2px 0; line-height: 1.5;
     }
+    .trace-log-line .tl-step { color: var(--accent); }
+    .trace-log-line .tl-done { color: var(--success); }
+    .trace-log-line .tl-src { color: var(--warning); }
 
-    /* ── Answer card ── */
-    .answer-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;overflow:hidden;transition:all 0.3s;box-shadow:0 8px 32px var(--shadow-color)}
-    .answer-hdr{padding:11px 16px;border-bottom:0.5px solid var(--ev-border);display:flex;align-items:center;justify-content:space-between}
-    .answer-hdr-left{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--ev-text);letter-spacing:.05em;text-transform:uppercase}
-    .answer-hdr-left i{font-size:14px;color:var(--ev-teal)}
-    .answer-body{padding:18px;font-size:13.5px;line-height:1.95;color:var(--ev-text-muted);font-family:'Fraunces',serif;font-weight:300}
-    .answer-body strong{color:var(--ev-text);font-weight:600}
-    .ac-text h3 {
-      font-family:'Plus Jakarta Sans',sans-serif;
-      font-size:13px;
-      letter-spacing:.06em;
-      text-transform:uppercase;
-      color:var(--ev-teal-light);
-      margin:18px 0 8px;
+    /* ═══════════════════════════════════════════════════════════
+       SPEC §6.3 — TOOL CALL DROPDOWN
+    ═══════════════════════════════════════════════════════════ */
+    .tools-btn {
+      display: none; align-items: center; gap: 6px;
+      padding: 5px 10px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg-elevated);
+      font-size: 10px; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; font-family: 'DM Mono', monospace;
+      position: relative; transition: all 0.15s;
     }
-    .conf-row{display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:14px;border-top:0.5px solid var(--ev-border)}
-    .conf-label{font-size:9px;font-weight:700;color:var(--ev-text-dim);letter-spacing:.08em;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
-    .conf-track{flex:1;height:3px;background:var(--ev-dark-2);border-radius:2px;overflow:hidden}
-    .conf-fill{height:100%;background:var(--ev-teal);border-radius:2px;width:0%;transition:width .9s ease}
-    .conf-pct{font-size:10px;font-weight:700;color:var(--ev-teal-light);white-space:nowrap;font-family:'DM Mono',monospace}
+    .tools-btn.visible { display: flex; }
+    .tools-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tools-badge {
+      background: var(--accent); color: #fff;
+      font-size: 8px; padding: 1px 5px; border-radius: 10px; font-weight: 700;
+    }
+    .tools-popover {
+      position: absolute; bottom: calc(100% + 8px); left: 0;
+      width: 320px; background: var(--bg-elevated);
+      border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 8px 32px var(--shadow);
+      display: none; flex-direction: column; overflow: hidden;
+      z-index: 50;
+    }
+    .tools-popover.open { display: flex; }
+    .tools-popover-hdr {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      font-size: 10px; font-weight: 700; color: var(--text-primary);
+      letter-spacing: 0.06em;
+    }
+    .tools-list { max-height: 240px; overflow-y: auto; }
+    .tool-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; border-bottom: 1px solid rgba(58,58,85,0.4);
+    }
+    .tool-row:last-child { border-bottom: none; }
+    .tool-icon {
+      width: 22px; height: 22px; border-radius: 5px;
+      background: var(--accent-subtle); border: 1px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--accent); flex-shrink: 0;
+    }
+    .tool-info { flex: 1; min-width: 0; }
+    .tool-name { font-size: 10px; font-weight: 600; color: var(--text-primary); }
+    .tool-query { font-size: 9px; color: var(--text-muted); font-family: 'DM Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tool-status { flex-shrink: 0; }
+    .tool-spinner {
+      width: 14px; height: 14px; border: 2px solid var(--border);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .tool-check { font-size: 12px; color: var(--success); }
+    .tool-count { font-size: 9px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
 
-    /* ── NHIS Drug Availability Widget ── */
-    .nhis-widget{margin-top:16px;padding-top:14px;border-top:0.5px solid var(--ev-border)}
-    .nhis-widget-label{font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--ev-text-dim);margin-bottom:10px;font-family:'Plus Jakarta Sans',sans-serif}
-    .nhis-meds{display:grid;grid-template-columns:1fr;gap:6px}
-    @media(min-width:600px){.nhis-meds{grid-template-columns:1fr 1fr}}
-    .nhis-med-row{background:var(--ev-dark-3);border:0.5px solid var(--ev-border);border-radius:8px;padding:10px 12px;display:flex;align-items:center;font-size:11px;gap:8px;transition:all 0.15s;font-family:'Plus Jakarta Sans',sans-serif}
-    .nhis-med-row:hover{border-color:var(--ev-teal-light)}
-    .nhis-med-name{font-weight:600;color:var(--ev-text)}
-    .nhis-med-status{font-size:8px;padding:2px 6px;border-radius:4px;font-weight:600;text-transform:uppercase}
-    .status-covered{background:var(--ev-teal-faint);color:var(--ev-teal-light);border:0.5px solid var(--ev-teal-mid)}
-    .status-free{background:rgba(24,95,165,0.15);color:#3FA5FF;border:0.5px solid #185FA5}
-    .nhis-med-avail{font-size:9.5px;color:var(--ev-text-muted);margin-left:auto;text-align:right}
+    /* ═══════════════════════════════════════════════════════════
+       ANSWER CARD — Spec §6.2 inline citations + source list
+    ═══════════════════════════════════════════════════════════ */
+    .answer-card {
+      background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; box-shadow: 0 8px 32px var(--shadow);
+    }
+    .answer-hdr {
+      padding: 11px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .answer-hdr-left { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.05em; text-transform: uppercase; }
+    .answer-hdr-left i { font-size: 14px; color: var(--accent); }
+    .answer-body { padding: 18px; font-size: 13.5px; line-height: 1.95; color: var(--text-muted); font-family: 'Fraunces', serif; font-weight: 300; }
+    .answer-body strong { color: var(--text-primary); font-weight: 600; }
+    .ac-text h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); margin: 16px 0 8px; }
 
-    /* ── Sources strip ── */
-    .sources-strip{margin-top:14px;padding-top:12px;border-top:0.5px solid var(--ev-border)}
-    .sources-strip-label{font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--ev-text-dim);margin-bottom:8px;font-family:'Plus Jakarta Sans',sans-serif}
-    .sources-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-    .sources-scroll::-webkit-scrollbar{display:none}
-    .source-chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:0.5px solid var(--ev-border-2);font-size:10px;font-weight:500;color:var(--ev-text-muted);cursor:pointer;background:var(--ev-dark-3);text-decoration:none;transition:all .15s;white-space:nowrap;flex-shrink:0;font-family:'DM Mono',monospace}
-    .source-chip:hover{border-color:var(--ev-teal);color:var(--ev-teal-light);background:var(--ev-teal-faint)}
-    .source-chip i{font-size:11px}
-    .source-chip-num{width:16px;height:16px;border-radius:50%;background:var(--ev-teal-faint);color:var(--ev-teal-light);font-size:8px;display:flex;align-items:center;justify-content:center;font-weight:600}
+    /* Inline citation superscripts */
+    .cite-ref {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 15px; height: 15px; border-radius: 4px;
+      background: var(--accent-subtle); border: 1px solid var(--accent);
+      font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 700;
+      color: var(--accent); vertical-align: super; margin: 0 1px;
+      cursor: pointer; transition: all 0.15s; text-decoration: none;
+      font-style: normal;
+    }
+    .cite-ref:hover { background: var(--accent); color: #fff; }
 
-    /* ── Follow-ups ── */
-    .fu-wrap{display:flex;flex-direction:column;gap:6px}
-    .fu-label{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--ev-text-dim);margin-bottom:3px;font-family:'Plus Jakarta Sans',sans-serif}
-    .fu-btn{text-align:left;padding:10px 14px;border-radius:8px;border:0.5px solid var(--ev-border-2);background:var(--ev-dark-3);font-size:11px;font-weight:500;color:var(--ev-text-muted);cursor:pointer;display:flex;align-items:flex-start;gap:8px;width:100%;font-family:'Plus Jakarta Sans',sans-serif;transition:all .15s;line-height:1.5}
-    .fu-btn:hover{background:var(--ev-dark-4);border-color:var(--ev-teal);color:var(--ev-teal-light);transform:translateX(2px)}
-    .fu-btn i{font-size:12px;color:var(--ev-teal);flex-shrink:0;margin-top:2px}
+    /* ── Ambient badge line §6.2 ── */
+    .ambient-row {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      padding: 10px 18px; border-bottom: 1px solid var(--border);
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      color: var(--text-muted); background: rgba(0,0,0,0.1);
+    }
+    .amb-item { display: flex; align-items: center; gap: 4px; }
+    .amb-label { font-size: 8px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); text-transform: uppercase; }
+    .amb-val { color: var(--text-primary); font-weight: 600; }
+    .amb-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border); }
+    .amb-badge {
+      padding: 2px 7px; border-radius: 10px; font-size: 8px; font-weight: 700;
+    }
+    .amb-high { background: rgba(76,175,136,0.15); color: var(--success); border: 1px solid var(--success); }
+    .amb-moderate { background: rgba(229,165,80,0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .amb-low { background: rgba(229,91,91,0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .amb-regional { background: var(--accent-subtle); color: var(--accent); border: 1px solid var(--accent); }
 
-    /* ── Info panel ── */
-    .info-panel{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:14px;padding:18px;display:none;box-shadow:0 8px 32px var(--shadow-color)}
-    .info-panel.show{display:block}
-    .info-title{font-size:12px;font-weight:700;color:var(--ev-text);margin-bottom:10px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:.05em}
-    .info-title i{font-size:14px;color:var(--ev-teal)}
-    .info-body{font-size:11.5px;color:var(--ev-text-muted);line-height:1.9;font-family:'Plus Jakarta Sans',sans-serif}
-    .deliberate{color:var(--ev-teal-light);font-weight:600}
+    /* Spec §6.2 — Compact source list */
+    .source-list { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .source-list-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .source-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 0; border-bottom: 1px solid rgba(58,58,85,0.35);
+      font-size: 10.5px;
+    }
+    .source-row:last-child { border-bottom: none; }
+    .src-idx {
+      width: 18px; height: 18px; border-radius: 4px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 700;
+      color: var(--text-muted); flex-shrink: 0;
+    }
+    .src-info { flex: 1; min-width: 0; }
+    .src-meta { font-size: 10px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+    .src-title-link { color: var(--text-primary); font-weight: 500; text-decoration: none; font-size: 11px; }
+    .src-title-link:hover { color: var(--accent); }
+    .src-relevance-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .src-bar { width: 80px; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden; }
+    .src-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .src-fill-high   { background: var(--success); }
+    .src-fill-mid    { background: var(--warning); }
+    .src-fill-low    { background: var(--danger); }
+    .src-score { font-size: 9px; color: var(--text-muted); font-family: 'DM Mono', monospace; min-width: 28px; text-align: right; }
+    .src-region-tag {
+      font-size: 8px; padding: 2px 6px; border-radius: 4px;
+      font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .tag-regional    { background: var(--accent-subtle); color: var(--accent); }
+    .tag-adjacent    { background: rgba(229,165,80,0.12); color: var(--warning); }
+    .tag-extrapolated { background: var(--bg-elevated); color: var(--text-muted); }
+
+    /* ── Own-knowledge indicator (subtle) ── */
+    .knowledge-note {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: 'DM Mono', monospace; font-size: 9px;
+      color: var(--text-muted); padding: 3px 8px; border-radius: 4px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .knowledge-note i { font-size: 10px; color: var(--warning); }
+
+    /* ── NHIS widget ── */
+    .nhis-widget { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .nhis-widget-label { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 10px; }
+    .nhis-meds { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .nhis-med-row {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 12px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 10px; transition: all 0.15s;
+    }
+    .nhis-med-row:hover { border-color: var(--accent); }
+    .nhis-med-name { font-weight: 600; color: var(--text-primary); flex: 1; }
+    .nhis-med-status { font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+    .status-covered { background: rgba(76,175,136,0.15); color: var(--success); border: 1px solid var(--success); }
+    .status-free { background: rgba(124,106,247,0.12); color: var(--accent); border: 1px solid var(--accent); }
+    .nhis-med-avail { font-size: 9px; color: var(--text-muted); }
+
+    /* ── Warning banner ── */
+    .warning-banner {
+      background: rgba(229,165,80,0.06); border: 1px solid rgba(229,165,80,0.3);
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 14px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .warning-banner i { font-size: 16px; color: var(--warning); flex-shrink: 0; margin-top: 1px; }
+    .warning-banner-text { font-size: 12px; line-height: 1.6; color: var(--text-primary); }
+    .warning-banner-text strong { color: var(--warning); }
+
+    /* ═══════════════════════════════════════════════════════════
+       SPEC §6.5 — FOLLOW-UP & DISAMBIGUATION CHIPS
+    ═══════════════════════════════════════════════════════════ */
+    .chips-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .chips-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 3px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 13px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--bg-surface);
+      font-size: 11px; font-weight: 500; color: var(--text-muted);
+      cursor: pointer; font-family: inherit; transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .chip:hover { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+    .chip i { font-size: 11px; }
+    .chip.disambiguation { border-color: var(--warning); color: var(--warning); background: rgba(229,165,80,0.06); }
+    .chip.disambiguation:hover { background: rgba(229,165,80,0.12); }
+
+    /* ── Conversational reply ── */
+    .convo-reply { display: flex; align-items: flex-start; gap: 10px; max-width: 78%; }
+    .convo-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-mid), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .convo-avatar i { font-size: 13px; color: #fff; }
+    .convo-text {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 3px 14px 14px 14px; padding: 12px 16px;
+      font-size: 13px; line-height: 1.75; color: var(--text-muted);
+    }
+    .convo-text .knowledge-note { margin-bottom: 8px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       SPEC §6.4 — RESEARCHER CANVAS
+    ═══════════════════════════════════════════════════════════ */
+    .canvas-panel {
+      background: var(--bg-surface); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+      width: 320px; transition: width 0.25s ease;
+    }
+    .canvas-icon-strip {
+      width: 40px; display: flex; flex-direction: column;
+      align-items: center; padding: 14px 0 8px;
+      border-left: 1px solid var(--border);
+      background: var(--bg-surface); cursor: pointer;
+    }
+    .canvas-strip-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--accent-subtle); border: 1px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: 16px;
+      transition: all 0.15s;
+    }
+    .canvas-strip-icon:hover { background: var(--accent); color: #fff; }
+    .canvas-hdr {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      min-height: 56px;
+    }
+    .canvas-title { font-size: 12px; font-weight: 700; color: var(--text-primary); letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+    .canvas-title i { font-size: 14px; color: var(--accent); }
+    .canvas-close-btn {
+      width: 24px; height: 24px; border-radius: 6px;
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text-muted); transition: all 0.15s;
+    }
+    .canvas-close-btn:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .canvas-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+    .canvas-body::-webkit-scrollbar { width: 3px; }
+    .canvas-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .canvas-section { display: flex; flex-direction: column; gap: 8px; }
+    .canvas-section-title {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--text-muted); text-transform: uppercase;
+    }
+    .canvas-field {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+      transition: border-color 0.15s;
+    }
+    .canvas-field:focus-within { border-color: var(--accent); }
+    .canvas-field-label { font-size: 9px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.06em; }
+    .canvas-field-input {
+      background: transparent; border: none; outline: none;
+      font-size: 12px; color: var(--text-primary); font-family: inherit;
+      width: 100%; resize: none;
+    }
+    .canvas-field-input::placeholder { color: var(--text-muted); }
+    .canvas-tag-list { display: flex; flex-wrap: wrap; gap: 5px; }
+    .canvas-tag {
+      padding: 4px 10px; border-radius: 10px;
+      background: var(--accent-subtle); border: 1px solid var(--accent);
+      font-size: 10px; color: var(--accent); font-weight: 600;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .canvas-tag.danger { background: rgba(229,91,91,0.1); border-color: var(--danger); color: var(--danger); }
+    .canvas-tag-remove { cursor: pointer; font-size: 9px; opacity: 0.7; }
+    .canvas-tag-remove:hover { opacity: 1; }
+    .canvas-add-input {
+      background: var(--bg-elevated); border: 1px dashed var(--border);
+      border-radius: 7px; padding: 6px 10px;
+      font-size: 11px; color: var(--text-primary); font-family: inherit;
+      width: 100%; outline: none; transition: border-color 0.15s;
+    }
+    .canvas-add-input::placeholder { color: var(--text-muted); }
+    .canvas-add-input:focus { border-color: var(--accent); }
+    .canvas-empty-note { font-size: 10px; color: var(--text-muted); font-style: italic; }
+    .canvas-clear-btn {
+      width: 100%; margin: 0 0 4px; padding: 8px;
+      border-radius: 7px; border: 1px solid var(--danger);
+      background: rgba(229,91,91,0.06); color: var(--danger);
+      font-size: 10px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .canvas-clear-btn:hover { background: rgba(229,91,91,0.14); }
+
+    /* Hidden until canvas is open */
+    .canvas-full { display: none; width: 320px; flex-direction: column; }
+    .app.canvas-open .canvas-full { display: flex; }
+    .app.canvas-open .canvas-icon-strip { display: none; }
+
+    /* ═══════════════════════════════════════════════════════════
+       SETTINGS PANEL (overlay)
+    ═══════════════════════════════════════════════════════════ */
+    .settings-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: flex-end;
+    }
+    .settings-overlay.open { display: flex; }
+    .settings-panel {
+      width: min(480px, 100vw); height: 100vh;
+      background: var(--bg-surface); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: -8px 0 40px var(--shadow);
+    }
+    .settings-hdr {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .settings-title { font-size: 14px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+    .settings-title i { font-size: 16px; color: var(--accent); }
+    .settings-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 24px; }
+    .settings-body::-webkit-scrollbar { width: 3px; }
+    .settings-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .settings-section { display: flex; flex-direction: column; gap: 12px; }
+    .settings-section-title { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--text-muted); text-transform: uppercase; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .settings-row-label { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+    .settings-row-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    /* Toggle */
+    .tog { width: 34px; height: 20px; border-radius: 10px; position: relative; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
+    .tog-on { background: var(--accent); }
+    .tog-off { background: var(--border); }
+    .tog-thumb { position: absolute; top: 3px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: left 0.15s; }
+    .ton { left: 17px; } .toff { left: 3px; }
+    /* Source grid */
+    .source-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .source-toggle-item {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; transition: border-color 0.15s;
+    }
+    .source-toggle-item.active { border-color: var(--accent); }
+    .source-toggle-name { font-size: 10px; font-weight: 600; color: var(--text-primary); }
+    .source-toggle-sub { font-size: 9px; color: var(--text-muted); margin-top: 1px; }
+    /* Disease multi-select */
+    .disease-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .disease-chip {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border);
+      background: var(--bg-elevated); font-size: 11px; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+    }
+    .disease-chip.selected { background: var(--accent-subtle); border-color: var(--accent); color: var(--accent); }
+    /* Region dropdown */
+    .settings-select {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: 7px; padding: 8px 12px;
+      font-size: 12px; color: var(--text-primary);
+      font-family: inherit; outline: none; width: 100%;
+      transition: border-color 0.15s;
+    }
+    .settings-select:focus { border-color: var(--accent); }
 
     /* ── Input bar ── */
-    .input-bar{flex-shrink:0;padding:16px 20px 20px;border-top:0.5px solid var(--ev-border);background:var(--ev-dark)}
-    .input-wrap{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--ev-border-2);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;transition:all .25s;box-shadow:0 -8px 32px rgba(2,6,23,0.15)}
-    .input-wrap:focus-within{border-color:var(--ev-teal);box-shadow:0 0 16px rgba(29,158,117,.18)}
-    .ta{background:transparent;border:none;outline:none;resize:none;font-size:13.5px;color:var(--ev-text);font-family:'Fraunces',serif;font-weight:300;line-height:1.7;width:100%;min-height:24px;max-height:120px;overflow-y:auto}
-    .ta::placeholder{color:var(--ev-text-dim)}
-    .ta::-webkit-scrollbar{width:2px}
-    .ta::-webkit-scrollbar-thumb{background:var(--ev-border-2)}
-    .input-actions{display:flex;align-items:center;gap:8px}
-    .tog-row{display:flex;align-items:center;gap:12px;flex:1;flex-wrap:wrap}
-    .tog-item{display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:600;color:var(--ev-text-dim);cursor:pointer;letter-spacing:.06em;user-select:none;font-family:'Plus Jakarta Sans',sans-serif;text-transform:uppercase}
-    .tog{width:26px;height:16px;border-radius:8px;position:relative;flex-shrink:0;cursor:pointer;transition:background .15s}
-    .tog-on{background:var(--ev-teal)}
-    .tog-off{background:var(--ev-border-2)}
-    .tog-thumb{position:absolute;top:2px;width:12px;height:12px;background:#fff;border-radius:50%;transition:left .15s}
-    .ton{left:12px}
-    .toff{left:2px}
-    .divv{width:0.5px;height:12px;background:var(--ev-border-2)}
-    .send-btn{width:32px;height:32px;border-radius:8px;background:var(--ev-border-2);border:none;display:flex;align-items:center;justify-content:center;cursor:not-allowed;flex-shrink:0;transition:all .15s}
-    .send-btn.active{background:var(--ev-teal);cursor:pointer}
-    .send-btn.active:hover{background:var(--ev-teal-mid);box-shadow:0 0 10px rgba(29,158,117,0.3)}
-    .send-btn i{font-size:14px;color:var(--ev-text-dim);transition:color .15s}
-    .send-btn.active i{color:#fff}
+    .input-bar { flex-shrink: 0; padding: 16px 20px 20px; border-top: 1px solid var(--border); background: var(--bg-base); }
+    .input-wrap {
+      background: var(--glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 10px;
+      transition: all 0.25s;
+    }
+    .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
+    .ta {
+      background: transparent; border: none; outline: none; resize: none;
+      font-size: 13.5px; color: var(--text-primary);
+      font-family: 'Fraunces', serif; font-weight: 300;
+      line-height: 1.7; width: 100%; min-height: 24px; max-height: 120px; overflow-y: auto;
+    }
+    .ta::placeholder { color: var(--text-muted); }
+    .ta::-webkit-scrollbar { width: 2px; }
+    .input-actions { display: flex; align-items: center; gap: 8px; position: relative; }
+    .send-btn {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--border); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: not-allowed; flex-shrink: 0; transition: all 0.15s;
+      margin-left: auto;
+    }
+    .send-btn.active { background: var(--accent); cursor: pointer; }
+    .send-btn.active:hover { background: var(--accent-mid); box-shadow: 0 0 14px var(--accent-glow); }
+    .send-btn i { font-size: 14px; color: var(--text-muted); transition: color 0.15s; }
+    .send-btn.active i { color: #fff; }
+
+    /* ── Error ── */
+    .error-card { background: var(--bg-elevated); border: 1px solid var(--danger); border-radius: 10px; padding: 12px; display: none; }
+    .error-card.show { display: block; }
+    .error-text { font-size: 11px; color: var(--danger); display: flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; }
 
     /* ── PDF modal ── */
-    .modal-overlay{position:fixed;inset:0;background:rgba(2,6,23,.75);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100}
-    .modal-overlay.show{display:flex}
-    .modal{background:var(--ev-dark-3);border:1px solid var(--ev-border-2);border-radius:14px;padding:24px;width:340px;box-shadow:0 12px 48px var(--shadow-color)}
-    .modal-title{font-size:16px;font-weight:600;color:var(--ev-text);margin-bottom:6px;font-family:'Plus Jakarta Sans',sans-serif}
-    .modal-sub{font-size:10.5px;color:var(--ev-text-muted);margin-bottom:18px;line-height:1.75;font-family:'Plus Jakarta Sans',sans-serif}l-sub{font-size:10px;color:var(--ev-text-muted);margin-bottom:16px;line-height:1.7;font-family:'DM Mono',monospace}
-    .modal-input{width:100%;background:var(--ev-dark);border:0.5px solid var(--ev-border-2);border-radius:7px;padding:9px 11px;font-size:12px;color:var(--ev-text);font-family:'DM Mono',monospace;margin-bottom:12px;outline:none;transition:border-color .15s}
-    .modal-input:focus{border-color:var(--ev-teal)}
-    .modal-input::placeholder{color:var(--ev-text-dim)}
-    .modal-actions{display:flex;gap:8px;justify-content:flex-end}
-    .modal-cancel{background:transparent;border:0.5px solid var(--ev-border-2);border-radius:7px;padding:7px 14px;font-size:11px;color:var(--ev-text-muted);cursor:pointer;font-family:'DM Mono',monospace;transition:all .15s}
-    .modal-cancel:hover{color:var(--ev-text)}
-    .modal-confirm{background:var(--ev-teal);border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:500;color:#fff;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:'DM Mono',monospace;transition:background .15s}
-    .modal-confirm:hover{background:var(--ev-teal-mid)}
-    .modal-confirm i{font-size:12px}
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 300; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 340px; box-shadow: 0 12px 48px var(--shadow); }
+    .modal-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .modal-sub { font-size: 10.5px; color: var(--text-muted); margin-bottom: 18px; line-height: 1.75; }
+    .modal-input { width: 100%; background: var(--bg-base); border: 1px solid var(--border); border-radius: 7px; padding: 9px 11px; font-size: 12px; color: var(--text-primary); font-family: 'DM Mono', monospace; margin-bottom: 12px; outline: none; transition: border-color 0.15s; }
+    .modal-input:focus { border-color: var(--accent); }
+    .modal-input::placeholder { color: var(--text-muted); }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .modal-cancel { background: transparent; border: 1px solid var(--border); border-radius: 7px; padding: 7px 14px; font-size: 11px; color: var(--text-muted); cursor: pointer; font-family: 'DM Mono', monospace; transition: all 0.15s; }
+    .modal-cancel:hover { color: var(--text-primary); }
+    .modal-confirm { background: var(--accent); border: none; border-radius: 7px; padding: 7px 14px; font-size: 11px; font-weight: 600; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; transition: background 0.15s; }
+    .modal-confirm:hover { background: var(--accent-mid); }
 
-    /* ── Conversational reply bubble (bypassed RAG) ── */
-    .convo-reply{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      max-width:78%;
-    }
-    .convo-avatar{
-      width:28px;
-      height:28px;
-      border-radius:50%;
-      background:linear-gradient(135deg,var(--ev-teal-mid),var(--ev-teal));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-shrink:0;
-      margin-top:2px;
-    }
-    .convo-avatar i{font-size:13px;color:#fff}
-    .convo-text{
-      background:var(--ev-dark-3);
-      border:0.5px solid var(--ev-border);
-      border-radius:3px 14px 14px 14px;
-      padding:12px 16px;
-      font-size:13px;
-      line-height:1.75;
-      color:var(--ev-text-muted);
-      font-family:'Plus Jakarta Sans',sans-serif;
-    }
+    /* ── Animations ── */
+    .pulse { display: inline-block; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; animation: pu 1s ease-in-out infinite; vertical-align: middle; }
+    @keyframes pu { 0%,100%{opacity:1}50%{opacity:.25} }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none} }
 
-    /* ── Pulse animation ── */
-    .pulse{display:inline-block;width:5px;height:5px;background:var(--ev-teal);border-radius:50%;animation:pu 1s ease-in-out infinite;vertical-align:middle}
-    @keyframes pu{0%,100%{opacity:1}50%{opacity:.25}}
-
-    /* ── Error state ── */
-    .error-card{background:var(--ev-dark-3);border:0.5px solid #3D1A1A;border-radius:10px;padding:13px;display:none}
-    .error-card.show{display:block}
-    .error-text{font-size:11px;color:#F09595;display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace}
-    .error-text i{font-size:13px;flex-shrink:0}
+    /* ── Info panel ── */
+    .info-panel {
+      background: var(--glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 14px;
+      padding: 18px; display: none;
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+    .info-panel.show { display: block; }
+    .info-title { font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-title i { font-size: 14px; color: var(--accent); }
+    .info-body { font-size: 11.5px; color: var(--text-muted); line-height: 1.9; }
+    .deliberate { color: var(--accent); font-weight: 600; }
   </style>
 </head>
 <body>
@@ -391,7 +745,9 @@
 
 <div class="app" id="app">
 
-  <!-- ── Sidebar ───────────────────────────────────────── -->
+  <!-- ═══════════════════════════════════════════════════════════
+       LEFT SIDEBAR — Spec §7.1
+  ═══════════════════════════════════════════════════════════ -->
   <div class="sidebar">
     <div class="sb-logo">
       <div class="logo-mark">
@@ -401,7 +757,7 @@
           <div class="bar" style="width:10px;opacity:.35"></div>
         </div>
         <div class="wordmark">
-          <div class="wordmark-name"><span class="e">EVID</span><span class="a">ANCE</span></div>
+          <div class="wordmark-name"><span class="ev">EVID</span>ANCE</div>
           <div class="wordmark-sub">EVIDENCE · GUIDANCE</div>
         </div>
       </div>
@@ -410,41 +766,11 @@
       </button>
     </div>
 
-    <!-- Multi-Chat Primary Button -->
     <div class="new-chat-wrap">
-      <button class="new-chat-btn" onclick="startNewChat()">
+      <button class="new-chat-btn" id="new-chat-btn" onclick="startNewChat()">
         <i class="ti ti-plus"></i>
         <span>New Chat</span>
       </button>
-    </div>
-
-    <div class="sb-section">
-      <div class="sb-label">DISEASE FOCUS</div>
-      <div class="filter active" onclick="setFilter(this,'')">
-        <i class="ti ti-globe" aria-hidden="true"></i>
-        <span class="filter-text">All conditions</span>
-        <span class="filter-dot"></span>
-      </div>
-      <div class="filter" onclick="setFilter(this,'sickle cell')">
-        <i class="ti ti-droplet" aria-hidden="true"></i>
-        <span class="filter-text">Sickle cell</span>
-      </div>
-      <div class="filter" onclick="setFilter(this,'malaria')">
-        <i class="ti ti-bug" aria-hidden="true"></i>
-        <span class="filter-text">Malaria</span>
-      </div>
-      <div class="filter" onclick="setFilter(this,'eclampsia')">
-        <i class="ti ti-heart" aria-hidden="true"></i>
-        <span class="filter-text">Eclampsia</span>
-      </div>
-      <div class="filter" onclick="setFilter(this,'tuberculosis')">
-        <i class="ti ti-lungs" aria-hidden="true"></i>
-        <span class="filter-text">Tuberculosis</span>
-      </div>
-      <div class="filter" onclick="setFilter(this,'diabetes')">
-        <i class="ti ti-activity" aria-hidden="true"></i>
-        <span class="filter-text">Diabetes</span>
-      </div>
     </div>
 
     <div class="sb-section" style="padding-bottom:4px">
@@ -452,19 +778,21 @@
     </div>
     <div class="sb-history" id="history-list"></div>
 
-    <div class="sb-user">
+    <div class="sb-bottom">
       <div class="avatar" id="user-avatar">?</div>
       <div class="user-info">
         <div class="user-name" id="user-display">Guest</div>
-        <div class="user-sub">Free · Groq</div>
+        <div class="user-sub">Demo · Groq</div>
       </div>
-      <span class="settings-btn" onclick="toggleInfo()">
-        <i class="ti ti-settings" aria-hidden="true"></i>
+      <span class="settings-link" onclick="openSettings()" title="Settings">
+        <i class="ti ti-settings" style="font-size:16px"></i>
       </span>
     </div>
   </div>
 
-  <!-- ── Main panel ─────────────────────────────────── -->
+  <!-- ═══════════════════════════════════════════════════════════
+       MAIN PANEL
+  ═══════════════════════════════════════════════════════════ -->
   <div class="main">
     <div class="topbar">
       <div class="topbar-left">
@@ -473,195 +801,712 @@
       </div>
       <div class="topbar-right">
         <button class="icon-btn" aria-label="Toggle Theme" onclick="toggleTheme()">
-          <i class="ti ti-sun" id="theme-icon" aria-hidden="true"></i>
+          <i class="ti ti-sun" id="theme-icon"></i>
+        </button>
+        <button class="icon-btn" aria-label="Researcher Canvas" onclick="toggleCanvas()" title="Researcher Canvas">
+          <i class="ti ti-clipboard-text"></i>
         </button>
         <button class="icon-btn" aria-label="Download PDF" id="pdf-btn" onclick="showModal()" style="display:none">
-          <i class="ti ti-download" aria-hidden="true"></i>
+          <i class="ti ti-download"></i>
         </button>
         <button class="icon-btn" aria-label="Copy last answer" id="copy-btn" onclick="copyAnswer()" style="display:none">
-          <i class="ti ti-copy" aria-hidden="true"></i>
+          <i class="ti ti-copy"></i>
         </button>
-        <button class="icon-btn" aria-label="How this works" onclick="toggleInfo()">
-          <i class="ti ti-info-circle" aria-hidden="true"></i>
+        <button class="icon-btn" aria-label="About" onclick="toggleInfo()">
+          <i class="ti ti-info-circle"></i>
         </button>
       </div>
     </div>
 
     <div class="content" id="content">
 
-      <!-- empty state -->
+      <!-- Empty state -->
       <div class="empty-state" id="empty-state">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+        <div class="empty-logo">
           <div class="empty-bars">
             <div class="empty-bar" style="width:50px"></div>
             <div class="empty-bar" style="width:36px;opacity:.65"></div>
             <div class="empty-bar" style="width:20px;opacity:.35"></div>
           </div>
-          <div class="empty-name"><span class="e">EVID</span><span class="a">ANCE</span></div>
+          <div class="empty-name"><span class="ev">EVID</span>ANCE</div>
           <div class="empty-tagline">
-            PubMed-grounded clinical evidence<br>for West African healthcare contexts
+            Multi-source clinical evidence · PubMed, Europe PMC, Semantic Scholar, OpenAlex<br>
+            Grounded in West African healthcare contexts
           </div>
         </div>
 
         <div class="suggestions">
           <div class="sug-label">SUGGESTED QUESTIONS</div>
-          <button class="sug-btn" onclick="fillQ('What is the recommended hydroxyurea dose for adults with HbSS sickle cell disease?')">
-            <i class="ti ti-droplet" aria-hidden="true"></i>
-            What is the recommended hydroxyurea dose for adults with HbSS sickle cell disease?
+          <button class="sug-btn" onclick="fillQ('What is the recommended hydroxyurea dose for adults with HbSS sickle cell disease in West Africa?')">
+            <i class="ti ti-droplet"></i>
+            Recommended hydroxyurea dose for adults with HbSS sickle cell disease?
           </button>
           <button class="sug-btn" onclick="fillQ('What is the first-line treatment for uncomplicated P. falciparum malaria in pregnant women?')">
-            <i class="ti ti-bug" aria-hidden="true"></i>
-            First-line treatment for uncomplicated P. falciparum malaria in pregnant women?
+            <i class="ti ti-bug"></i>
+            First-line treatment for P. falciparum malaria in pregnant women?
           </button>
           <button class="sug-btn" onclick="fillQ('What is the immediate management of eclampsia in a resource-limited setting?')">
-            <i class="ti ti-heart" aria-hidden="true"></i>
-            Immediate management of eclampsia in a resource-limited setting?
+            <i class="ti ti-heart"></i>
+            Immediate management of eclampsia in resource-limited settings?
           </button>
           <button class="sug-btn" onclick="fillQ('What are the cardiovascular benefits of SGLT2 inhibitors in type 2 diabetes?')">
-            <i class="ti ti-activity" aria-hidden="true"></i>
+            <i class="ti ti-activity"></i>
             Cardiovascular benefits of SGLT2 inhibitors in type 2 diabetes?
           </button>
         </div>
       </div>
 
-      <!-- conversation thread -->
+      <!-- Thread -->
       <div class="results" id="results">
-        <!-- thread turns injected here by JS -->
-
         <div class="info-panel" id="info-panel">
-          <div class="info-title">
-            <i class="ti ti-info-circle" aria-hidden="true"></i> About Evidance
-          </div>
+          <div class="info-title"><i class="ti ti-info-circle"></i> About EvidAnce</div>
           <div class="info-body">
-            Evidance retrieves real PubMed abstracts for every question, embeds them locally with MiniLM-L6, retrieves the most relevant chunks using FAISS vector search, and grounds the answer strictly in that evidence.<br><br>
-            <span class="deliberate">The name is deliberate</span> — Evidence + Guidance, built for West African clinical contexts. Every answer includes confidence scoring and direct PubMed source links.<br><br>
+            EvidAnce is a multi-source clinical evidence agent. It searches PubMed, Europe PMC, Semantic Scholar, and OpenAlex in parallel, scores results by relevance, evidence tier, recency, and West Africa applicability, then synthesises an answer grounded in that evidence.<br><br>
+            <span class="deliberate">The name is deliberate</span> — Evidence + Guidance, built for West African clinical contexts.<br><br>
             Built by Wilfred Asumboya · University of Ghana · 2026
           </div>
         </div>
       </div>
-    </div>
+    </div><!-- .content -->
 
+    <!-- Input bar -->
     <div class="input-bar">
       <div class="input-wrap">
         <textarea
-          class="ta"
-          id="ta"
+          class="ta" id="ta"
           placeholder="Ask a clinical question..."
           rows="1"
           oninput="autoResize(this);checkSend()"
           onkeydown="handleKey(event)"
         ></textarea>
         <div class="input-actions">
-          <div class="tog-row">
-            <div class="tog-item" onclick="toggle('wa')">
-              <div class="tog tog-on" id="tog-wa"><div class="tog-thumb ton"></div></div>
-              West Africa
-            </div>
-            <div class="divv"></div>
-            <div class="tog-item" onclick="toggle('st')">
-              <div class="tog tog-on" id="tog-st"><div class="tog-thumb ton"></div></div>
-              Stream steps
-            </div>
-            <div class="divv"></div>
-            <div class="tog-item" onclick="toggle('eml')">
-              <div class="tog tog-off" id="tog-eml"><div class="tog-thumb toff"></div></div>
-              WHO EML
-            </div>
-            <div class="divv"></div>
-            <div class="tog-item" onclick="toggle('wiki')">
-              <div class="tog tog-off" id="tog-wiki"><div class="tog-thumb toff"></div></div>
-              Wikipedia
+          <!-- Tool call dropdown — Spec §6.3 -->
+          <div class="tools-btn" id="tools-btn" onclick="toggleToolsPopover()">
+            <i class="ti ti-tool"></i>
+            <span>Tools</span>
+            <span class="tools-badge" id="tools-count">0</span>
+            <!-- Popover -->
+            <div class="tools-popover" id="tools-popover">
+              <div class="tools-popover-hdr">ACTIVE SOURCES</div>
+              <div class="tools-list" id="tools-list"></div>
             </div>
           </div>
           <button class="send-btn" id="send-btn" aria-label="Send question" onclick="handleSend()">
-            <i class="ti ti-arrow-up" aria-hidden="true"></i>
+            <i class="ti ti-arrow-up"></i>
           </button>
         </div>
       </div>
     </div>
+  </div><!-- .main -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       RESEARCHER CANVAS PANEL — Spec §6.4
+  ═══════════════════════════════════════════════════════════ -->
+  <!-- Icon strip (collapsed state) -->
+  <div class="canvas-icon-strip" onclick="toggleCanvas()" title="Open Researcher Canvas">
+    <div class="canvas-strip-icon">
+      <i class="ti ti-clipboard-text"></i>
+    </div>
+  </div>
+
+  <!-- Full panel (expanded state) -->
+  <div class="canvas-full" id="canvas-full">
+    <div class="canvas-hdr">
+      <div class="canvas-title"><i class="ti ti-clipboard-text"></i> Researcher Canvas</div>
+      <button class="canvas-close-btn" onclick="toggleCanvas()" aria-label="Close canvas">
+        <i class="ti ti-x" style="font-size:11px"></i>
+      </button>
+    </div>
+    <div class="canvas-body">
+      <!-- Patient Context -->
+      <div class="canvas-section">
+        <div class="canvas-section-title">Patient Context</div>
+        <div class="canvas-field">
+          <div class="canvas-field-label">AGE</div>
+          <input class="canvas-field-input" id="cv-age" type="text" placeholder="e.g. 32 years" oninput="debouncedCanvasSave()"/>
+        </div>
+        <div class="canvas-field">
+          <div class="canvas-field-label">WEIGHT</div>
+          <input class="canvas-field-input" id="cv-weight" type="text" placeholder="e.g. 68 kg" oninput="debouncedCanvasSave()"/>
+        </div>
+        <div class="canvas-field">
+          <div class="canvas-field-label">CONDITION</div>
+          <input class="canvas-field-input" id="cv-condition" type="text" placeholder="e.g. HbSS sickle cell" oninput="debouncedCanvasSave()"/>
+        </div>
+      </div>
+
+      <!-- Drugs Mentioned -->
+      <div class="canvas-section">
+        <div class="canvas-section-title">Drugs Mentioned</div>
+        <div class="canvas-tag-list" id="cv-drugs-list"></div>
+        <input class="canvas-add-input" id="cv-drug-input" placeholder="Add drug name + Enter" onkeydown="addCanvasTag(event,'drug')"/>
+      </div>
+
+      <!-- Contraindications -->
+      <div class="canvas-section">
+        <div class="canvas-section-title">Contraindications Flagged</div>
+        <div class="canvas-tag-list" id="cv-contra-list"></div>
+        <input class="canvas-add-input" id="cv-contra-input" placeholder="Add contraindication + Enter" onkeydown="addCanvasTag(event,'contra')"/>
+      </div>
+
+      <!-- Dosing Decisions -->
+      <div class="canvas-section">
+        <div class="canvas-section-title">Dosing Decisions</div>
+        <div id="cv-decisions-list" style="display:flex;flex-direction:column;gap:6px">
+          <div class="canvas-empty-note">No decisions yet — they appear as you ask dosing questions.</div>
+        </div>
+      </div>
+
+      <button class="canvas-clear-btn" onclick="clearCanvas()">
+        <i class="ti ti-trash" style="font-size:11px;margin-right:5px"></i> Clear Canvas
+      </button>
+    </div>
+  </div>
+
+</div><!-- .app -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SETTINGS PANEL — Spec §7.2
+═══════════════════════════════════════════════════════════ -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettingsOutside(event)">
+  <div class="settings-panel">
+    <div class="settings-hdr">
+      <div class="settings-title"><i class="ti ti-settings"></i> Settings</div>
+      <button class="canvas-close-btn" onclick="closeSettings()">
+        <i class="ti ti-x" style="font-size:11px"></i>
+      </button>
+    </div>
+    <div class="settings-body">
+
+      <!-- Evidence Sources -->
+      <div class="settings-section">
+        <div class="settings-section-title">Evidence Sources</div>
+        <div class="source-grid" id="source-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Disease Focus -->
+      <div class="settings-section">
+        <div class="settings-section-title">Disease Focus</div>
+        <div class="disease-grid" id="disease-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Region -->
+      <div class="settings-section">
+        <div class="settings-section-title">Region</div>
+        <select class="settings-select" id="st-region" onchange="patchSetting('region', this.value)">
+          <option value="west_africa">West Africa</option>
+          <option value="subsaharan">Sub-Saharan Africa</option>
+          <option value="pan_africa">Pan-Africa</option>
+          <option value="global">Global</option>
+        </select>
+      </div>
+
+      <!-- Preferences -->
+      <div class="settings-section">
+        <div class="settings-section-title">Preferences</div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Show Confidence Display</div>
+            <div class="settings-row-desc">Show High/Moderate/Low badges on answers</div>
+          </div>
+          <div class="tog tog-on" id="tog-confidence" onclick="toggleSetting('show_confidence', 'tog-confidence')">
+            <div class="tog-thumb ton"></div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Session Memory</div>
+            <div class="settings-row-desc">Persist canvas data across sessions</div>
+          </div>
+          <div class="tog tog-on" id="tog-canvas-persist" onclick="toggleSetting('canvas_persist', 'tog-canvas-persist')">
+            <div class="tog-thumb ton"></div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Theme</div>
+            <div class="settings-row-desc">Antigravity dark / Light clinical</div>
+          </div>
+          <div class="tog" id="tog-theme" onclick="toggleThemeFromSettings()">
+            <div class="tog-thumb toff"></div>
+          </div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Export Format</div>
+          </div>
+          <select class="settings-select" id="st-export" style="width:auto;padding:5px 10px" onchange="patchSetting('export_format', this.value)">
+            <option value="pdf">PDF</option>
+            <option value="link">Link</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
-<!-- PDF name modal -->
+<!-- PDF modal -->
 <div class="modal-overlay" id="modal" onclick="hideModalOutside(event)">
   <div class="modal">
     <div class="modal-title">Download clinical report</div>
-    <div class="modal-sub">
-      Your name will be embedded in the PDF as the requesting clinician.
-      Leave blank to export anonymously.
-    </div>
-    <input
-      class="modal-input"
-      id="name-input"
-      type="text"
-      placeholder="e.g. Dr. Kwame Mensah"
-      maxlength="60"
-    />
+    <div class="modal-sub">Your name will appear in the PDF as the requesting clinician. Leave blank for anonymous.</div>
+    <input class="modal-input" id="name-input" type="text" placeholder="e.g. Dr. Kwame Mensah" maxlength="60"/>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="hideModal()">Cancel</button>
       <button class="modal-confirm" onclick="confirmPDF()">
-        <i class="ti ti-download" aria-hidden="true"></i> Generate PDF
+        <i class="ti ti-download"></i> Generate PDF
       </button>
     </div>
   </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
-// STATE & CONFIGURATION
-// Multi-chat integration: Each conversation thread consists of
-// multiple turns, each turn containing { question, answer,
-// sources, confidence, followups, papers, drugs }
-// ─────────────────────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
 const state = {
-  togWA:        true,
-  togST:        true,
-  togEML:       false,
-  togWiki:      false,
-  filter:       '',
-  conversation: [],         // active conversation turns list
-  currentThreadId: null,     // active thread UUID/timestamp
-  startTime:    null,
-  currentStreamCard:  null,
-  currentAnswerCard:  null,
-  currentFuWrap:      null,
-  currentErrorCard:   null,
+  conversation: [],
+  currentThreadId: null,
+  startTime: null,
+  currentStreamCard: null,
+  currentAnswerCard: null,
+  currentTraceBar: null,
+  currentFuWrap: null,
+  currentErrorCard: null,
+  canvasSessionId: null,
+  settings: {
+    active_sources: ['pubmed','europepmc','semanticscholar','openalex'],
+    disease_focus: [],
+    region: 'west_africa',
+    export_format: 'pdf',
+    canvas_persist: true,
+    theme: 'dark',
+    show_confidence: true,
+  },
+  toolStatuses: {},
 };
 
-// ── Sidebar collapse ──────────────────────────────────────────
-function toggleSidebar() {
-  document.getElementById('app').classList.toggle('collapsed');
+/* ═══════════════════════════════════════════════════════════════
+   CSRF
+═══════════════════════════════════════════════════════════════ */
+function getCookie(name) {
+  const val = `; ${document.cookie}`;
+  const parts = val.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return '';
 }
 
-// ── Multi-Chat LocalStorage Engine ────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS — load, patch, render
+═══════════════════════════════════════════════════════════════ */
+const ALL_SOURCES = [
+  { id:'pubmed',          name:'PubMed',           sub:'NIH NCBI' },
+  { id:'europepmc',       name:'Europe PMC',        sub:'Open Access' },
+  { id:'semanticscholar', name:'Semantic Scholar',  sub:'AI2' },
+  { id:'openalex',        name:'OpenAlex',           sub:'Open Data' },
+];
+const ALL_DISEASES = ['Sickle Cell','Malaria','TB','HIV','Hypertension','Diabetes','G6PD','Meningitis'];
+
+async function loadSettings() {
+  try {
+    const r = await fetch('/api/settings/');
+    if (r.ok) {
+      state.settings = await r.json();
+    }
+  } catch(e) {}
+  renderSettingsUI();
+}
+
+async function patchSetting(field, value) {
+  state.settings[field] = value;
+  try {
+    await fetch('/api/settings/', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+      body: JSON.stringify({ [field]: value }),
+    });
+  } catch(e) {}
+}
+
+function toggleSetting(field, togId) {
+  const current = state.settings[field];
+  const newVal = !current;
+  const el = document.getElementById(togId);
+  const thumb = el.querySelector('.tog-thumb');
+  el.className = 'tog ' + (newVal ? 'tog-on' : 'tog-off');
+  thumb.className = 'tog-thumb ' + (newVal ? 'ton' : 'toff');
+  patchSetting(field, newVal);
+}
+
+function renderSettingsUI() {
+  // Sources
+  const sg = document.getElementById('source-grid');
+  sg.innerHTML = '';
+  ALL_SOURCES.forEach(s => {
+    const active = state.settings.active_sources.includes(s.id);
+    const div = document.createElement('div');
+    div.className = 'source-toggle-item' + (active ? ' active' : '');
+    div.id = 'src-item-' + s.id;
+    div.innerHTML = `
+      <div>
+        <div class="source-toggle-name">${s.name}</div>
+        <div class="source-toggle-sub">${s.sub}</div>
+      </div>
+      <div class="tog ${active?'tog-on':'tog-off'}" id="tog-src-${s.id}" onclick="toggleSource('${s.id}')">
+        <div class="tog-thumb ${active?'ton':'toff'}"></div>
+      </div>
+    `;
+    sg.appendChild(div);
+  });
+
+  // Diseases
+  const dg = document.getElementById('disease-grid');
+  dg.innerHTML = '';
+  ALL_DISEASES.forEach(d => {
+    const key = d.toLowerCase().replace(' ','_');
+    const selected = state.settings.disease_focus.includes(key);
+    const chip = document.createElement('div');
+    chip.className = 'disease-chip' + (selected ? ' selected' : '');
+    chip.textContent = d;
+    chip.onclick = () => toggleDisease(key, chip);
+    dg.appendChild(chip);
+  });
+
+  // Region
+  document.getElementById('st-region').value = state.settings.region || 'west_africa';
+
+  // Toggles
+  const setTog = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const thumb = el.querySelector('.tog-thumb');
+    el.className = 'tog ' + (val ? 'tog-on' : 'tog-off');
+    thumb.className = 'tog-thumb ' + (val ? 'ton' : 'toff');
+  };
+  setTog('tog-confidence', state.settings.show_confidence);
+  setTog('tog-canvas-persist', state.settings.canvas_persist);
+  setTog('tog-theme', state.settings.theme === 'light');
+}
+
+function toggleSource(srcId) {
+  let sources = [...(state.settings.active_sources || [])];
+  if (sources.includes(srcId)) {
+    sources = sources.filter(s => s !== srcId);
+  } else {
+    sources.push(srcId);
+  }
+  patchSetting('active_sources', sources);
+  // Update UI
+  const item = document.getElementById('src-item-' + srcId);
+  const tog = document.getElementById('tog-src-' + srcId);
+  const active = sources.includes(srcId);
+  if (item) item.className = 'source-toggle-item' + (active ? ' active' : '');
+  if (tog) {
+    tog.className = 'tog ' + (active ? 'tog-on' : 'tog-off');
+    tog.querySelector('.tog-thumb').className = 'tog-thumb ' + (active ? 'ton' : 'toff');
+  }
+}
+
+function toggleDisease(key, chip) {
+  let focus = [...(state.settings.disease_focus || [])];
+  if (focus.includes(key)) {
+    focus = focus.filter(d => d !== key);
+    chip.classList.remove('selected');
+  } else {
+    focus.push(key);
+    chip.classList.add('selected');
+  }
+  patchSetting('disease_focus', focus);
+}
+
+function openSettings() { document.getElementById('settings-overlay').classList.add('open'); }
+function closeSettings() { document.getElementById('settings-overlay').classList.remove('open'); }
+function closeSettingsOutside(e) { if (e.target === document.getElementById('settings-overlay')) closeSettings(); }
+
+function toggleThemeFromSettings() {
+  toggleTheme();
+  const isLight = document.body.classList.contains('light-theme');
+  patchSetting('theme', isLight ? 'light' : 'dark');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CANVAS
+═══════════════════════════════════════════════════════════════ */
+function toggleCanvas() {
+  document.getElementById('app').classList.toggle('canvas-open');
+}
+
+let canvasSaveTimer = null;
+function debouncedCanvasSave() {
+  clearTimeout(canvasSaveTimer);
+  canvasSaveTimer = setTimeout(saveCanvas, 800);
+}
+
+async function initCanvas() {
+  try {
+    const r = await fetch('/api/canvas/init/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+    });
+    if (r.ok) {
+      const data = await r.json();
+      state.canvasSessionId = data.session_id;
+      loadCanvasData(data);
+    }
+  } catch(e) {}
+}
+
+function loadCanvasData(data) {
+  if (!data) return;
+  const patient = data.patient || {};
+  document.getElementById('cv-age').value = patient.age || '';
+  document.getElementById('cv-weight').value = patient.weight || '';
+  document.getElementById('cv-condition').value = patient.condition || '';
+  renderCanvasTags('cv-drugs-list', data.drugs || [], 'drug');
+  renderCanvasTags('cv-contra-list', data.contraindications || [], 'contra');
+  renderCanvasDecisions(data.decisions || []);
+}
+
+function renderCanvasTags(containerId, items, type) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  items.forEach(item => {
+    const tag = document.createElement('div');
+    tag.className = 'canvas-tag' + (type === 'contra' ? ' danger' : '');
+    tag.innerHTML = `${item} <span class="canvas-tag-remove" onclick="removeCanvasTag('${containerId}','${item}','${type}')">×</span>`;
+    el.appendChild(tag);
+  });
+}
+
+function renderCanvasDecisions(decisions) {
+  const el = document.getElementById('cv-decisions-list');
+  el.innerHTML = '';
+  if (!decisions.length) {
+    el.innerHTML = '<div class="canvas-empty-note">No decisions yet — they appear as you ask dosing questions.</div>';
+    return;
+  }
+  decisions.forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'canvas-field';
+    div.style.cursor = 'default';
+    div.innerHTML = `<div class="canvas-field-input" style="pointer-events:none">${d}</div>`;
+    el.appendChild(div);
+  });
+}
+
+function addCanvasTag(event, type) {
+  if (event.key !== 'Enter') return;
+  const inputId = type === 'drug' ? 'cv-drug-input' : 'cv-contra-input';
+  const listId  = type === 'drug' ? 'cv-drugs-list' : 'cv-contra-list';
+  const input   = document.getElementById(inputId);
+  const val     = input.value.trim();
+  if (!val) return;
+  input.value = '';
+  // Add tag to DOM
+  const el = document.getElementById(listId);
+  const tag = document.createElement('div');
+  tag.className = 'canvas-tag' + (type === 'contra' ? ' danger' : '');
+  tag.innerHTML = `${val} <span class="canvas-tag-remove" onclick="removeCanvasTag('${listId}','${val}','${type}')">×</span>`;
+  el.appendChild(tag);
+  saveCanvas();
+}
+
+function removeCanvasTag(containerId, item, type) {
+  const el = document.getElementById(containerId);
+  const tags = el.querySelectorAll('.canvas-tag');
+  tags.forEach(tag => {
+    if (tag.textContent.replace('×','').trim() === item) el.removeChild(tag);
+  });
+  saveCanvas();
+}
+
+async function saveCanvas() {
+  if (!state.canvasSessionId) return;
+  const drugs = getTagsFromList('cv-drugs-list');
+  const contras = getTagsFromList('cv-contra-list');
+  const patient = {
+    age: document.getElementById('cv-age').value.trim(),
+    weight: document.getElementById('cv-weight').value.trim(),
+    condition: document.getElementById('cv-condition').value.trim(),
+  };
+  try {
+    const r = await fetch(`/api/canvas/${state.canvasSessionId}/`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+      body: JSON.stringify({ patient, drugs, contraindications: contras }),
+    });
+    if (r.ok) {
+      const data = await r.json();
+      loadCanvasData(data);
+    }
+  } catch(e) {}
+}
+
+async function clearCanvas() {
+  if (!state.canvasSessionId) return;
+  await fetch(`/api/canvas/${state.canvasSessionId}/`, {
+    method: 'DELETE',
+    headers: { 'X-CSRFToken': getCookie('csrftoken') },
+  });
+  document.getElementById('cv-age').value = '';
+  document.getElementById('cv-weight').value = '';
+  document.getElementById('cv-condition').value = '';
+  document.getElementById('cv-drugs-list').innerHTML = '';
+  document.getElementById('cv-contra-list').innerHTML = '';
+  renderCanvasDecisions([]);
+}
+
+function getTagsFromList(listId) {
+  const tags = document.getElementById(listId).querySelectorAll('.canvas-tag');
+  return Array.from(tags).map(t => t.textContent.replace('×','').trim()).filter(Boolean);
+}
+
+function getCanvasContext() {
+  return {
+    patient: {
+      age: document.getElementById('cv-age').value.trim(),
+      weight: document.getElementById('cv-weight').value.trim(),
+      condition: document.getElementById('cv-condition').value.trim(),
+    },
+    drugs: getTagsFromList('cv-drugs-list'),
+    contraindications: getTagsFromList('cv-contra-list'),
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOOL CALL DROPDOWN — Spec §6.3
+═══════════════════════════════════════════════════════════════ */
+const SOURCE_ICONS = {
+  pubmed:          'ti-dna',
+  europepmc:       'ti-flask',
+  semanticscholar: 'ti-school',
+  openalex:        'ti-globe',
+};
+
+function showToolsBtn(sources) {
+  const btn = document.getElementById('tools-btn');
+  const list = document.getElementById('tools-list');
+  state.toolStatuses = {};
+  list.innerHTML = '';
+  sources.forEach(src => {
+    state.toolStatuses[src] = { status: 'fetching', count: 0 };
+    const row = document.createElement('div');
+    row.className = 'tool-row';
+    row.id = 'tool-row-' + src;
+    row.innerHTML = `
+      <div class="tool-icon"><i class="ti ${SOURCE_ICONS[src] || 'ti-database'}"></i></div>
+      <div class="tool-info">
+        <div class="tool-name">${src}</div>
+        <div class="tool-query" id="tool-query-${src}">querying...</div>
+      </div>
+      <div class="tool-status">
+        <div class="tool-spinner" id="tool-spinner-${src}"></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById('tools-count').textContent = sources.length;
+  btn.classList.add('visible');
+}
+
+function updateToolStatus(src, status, count, query) {
+  const spinner = document.getElementById('tool-spinner-' + src);
+  const queryEl = document.getElementById('tool-query-' + src);
+  if (queryEl && query) queryEl.textContent = query;
+  if (spinner) {
+    if (status === 'done') {
+      spinner.outerHTML = `<span class="tool-check"><i class="ti ti-check"></i></span><span class="tool-count">${count} found</span>`;
+    } else if (status === 'error') {
+      spinner.outerHTML = `<span style="color:var(--danger);font-size:11px"><i class="ti ti-x"></i></span>`;
+    }
+  }
+}
+
+function hideToolsBtn() {
+  document.getElementById('tools-btn').classList.remove('visible');
+  document.getElementById('tools-popover').classList.remove('open');
+}
+
+function toggleToolsPopover() {
+  document.getElementById('tools-popover').classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REASONING TRACE BAR — Spec §6.1
+═══════════════════════════════════════════════════════════════ */
+function buildTraceBar() {
+  const el = document.createElement('div');
+  el.className = 'trace-bar';
+  el.innerHTML = `
+    <div class="trace-bar-header" onclick="this.parentElement.classList.toggle('expanded')">
+      <div class="trace-dot"></div>
+      <span class="trace-text" id="trace-text-${Date.now()}">Initialising search...</span>
+      <i class="ti ti-chevron-down trace-expand-icon"></i>
+    </div>
+    <div class="trace-log"></div>
+  `;
+  const textEl = el.querySelector('.trace-text');
+  const logEl  = el.querySelector('.trace-log');
+
+  function update(step, source, query, count) {
+    let msg = '';
+    if (step === 'searching' && source) msg = `Searching ${source}${query ? ` for "${query}"` : ''}`;
+    else if (step === 'retrieving' && source) msg = `Retrieved ${count ?? '?'} from ${source}`;
+    else if (step === 'filtering') msg = `Filtering ${count ?? ''} results`;
+    else if (step === 'synthesizing') msg = `Synthesising answer...`;
+    else if (step === 'done') msg = `Done`;
+    else msg = step;
+
+    textEl.textContent = msg;
+
+    const line = document.createElement('div');
+    line.className = 'trace-log-line';
+    const stepClass = step === 'done' ? 'tl-done' : step === 'searching' ? 'tl-step' : 'tl-src';
+    line.innerHTML = `<span class="${stepClass}">[${step}]</span> ${msg}`;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function finish() {
+    el.classList.add('done');
+    setTimeout(() => el.remove(), 400);
+  }
+
+  return { el, update, finish };
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDEBAR / THREADS
+═══════════════════════════════════════════════════════════════ */
+function toggleSidebar() { document.getElementById('app').classList.toggle('sidebar-collapsed'); }
+
 function getThreads() {
   try { return JSON.parse(localStorage.getItem('evidance_threads')) || []; }
   catch { return []; }
 }
-
-function saveThreads(threads) {
-  localStorage.setItem('evidance_threads', JSON.stringify(threads));
-}
+function saveThreads(t) { localStorage.setItem('evidance_threads', JSON.stringify(t)); }
 
 function renderSidebarThreads() {
   const list = document.getElementById('history-list');
   list.innerHTML = '';
   const threads = getThreads();
-
-  if (threads.length === 0) {
-    const emptyDiv = document.createElement('div');
-    emptyDiv.className = 'sb-label';
-    emptyDiv.style.textAlign = 'center';
-    emptyDiv.style.padding = '12px 0';
-    emptyDiv.textContent = 'No recent chats';
-    list.appendChild(emptyDiv);
+  if (!threads.length) {
+    const el = document.createElement('div');
+    el.className = 'sb-label';
+    el.style.cssText = 'text-align:center;padding:12px 0';
+    el.textContent = 'No recent chats';
+    list.appendChild(el);
     return;
   }
-
   threads.forEach(t => {
     const div = document.createElement('div');
     div.className = 'history-item' + (t.id === state.currentThreadId ? ' active' : '');
-    div.textContent = t.title.length > 30 ? t.title.slice(0, 30) + '…' : t.title;
+    div.textContent = t.title.length > 32 ? t.title.slice(0,32)+'…' : t.title;
     div.onclick = () => loadThread(t.id);
     list.appendChild(div);
   });
@@ -670,27 +1515,21 @@ function renderSidebarThreads() {
 function startNewChat() {
   state.currentThreadId = null;
   state.conversation = [];
-  
-  // Reset results area DOM
   const results = document.getElementById('results');
   results.innerHTML = `
     <div class="info-panel" id="info-panel">
-      <div class="info-title">
-        <i class="ti ti-info-circle" aria-hidden="true"></i> About Evidance
-      </div>
+      <div class="info-title"><i class="ti ti-info-circle"></i> About EvidAnce</div>
       <div class="info-body">
-        Evidance retrieves real PubMed abstracts for every question, embeds them locally with MiniLM-L6, retrieves the most relevant chunks using FAISS vector search, and grounds the answer strictly in that evidence.<br><br>
-        <span class="deliberate">The name is deliberate</span> — Evidence + Guidance, built for West African clinical contexts. Every answer includes confidence scoring and direct PubMed source links.<br><br>
+        EvidAnce searches PubMed, Europe PMC, Semantic Scholar and OpenAlex in parallel, scores results by relevance, evidence tier, recency, and West Africa applicability.<br><br>
+        <span class="deliberate">Evidence + Guidance</span> — built for West African clinical contexts.<br><br>
         Built by Wilfred Asumboya · University of Ghana · 2026
       </div>
     </div>
   `;
-  
-  document.getElementById('results').style.display = 'none';
+  results.style.display = 'none';
   document.getElementById('empty-state').style.display = 'flex';
-  document.getElementById('pdf-btn').style.display  = 'none';
+  document.getElementById('pdf-btn').style.display = 'none';
   document.getElementById('copy-btn').style.display = 'none';
-  
   renderSidebarThreads();
 }
 
@@ -698,629 +1537,309 @@ function loadThread(id) {
   const threads = getThreads();
   const thread = threads.find(t => t.id === id);
   if (!thread) return;
-
   state.currentThreadId = thread.id;
   state.conversation = thread.turns || [];
-
   showResultsArea();
-
   const results = document.getElementById('results');
   const infoPanel = document.getElementById('info-panel');
-
-  // Remove everything except info-panel
-  Array.from(results.children).forEach(child => {
-    if (child !== infoPanel) results.removeChild(child);
-  });
-
-  // Render past turns
-  state.conversation.forEach(turn => {
-    renderTurnDOM(turn);
-  });
-
-  // Reveal actions
-  document.getElementById('pdf-btn').style.display  = 'flex';
+  Array.from(results.children).forEach(c => { if (c !== infoPanel) results.removeChild(c); });
+  state.conversation.forEach(turn => renderTurnDOM(turn));
+  document.getElementById('pdf-btn').style.display = 'flex';
   document.getElementById('copy-btn').style.display = 'flex';
-
   renderSidebarThreads();
-  
-  setTimeout(() => infoPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 }
 
 function persistCurrentThread() {
   if (!state.conversation.length) return;
   let threads = getThreads();
   const firstQ = state.conversation[0].question;
-  const title = firstQ.length > 50 ? firstQ.slice(0, 50) + '…' : firstQ;
-
+  const title = firstQ.length > 50 ? firstQ.slice(0,50)+'…' : firstQ;
   if (!state.currentThreadId) {
     state.currentThreadId = Date.now().toString();
-    threads.unshift({
-      id: state.currentThreadId,
-      title: title,
-      turns: state.conversation
-    });
+    threads.unshift({ id: state.currentThreadId, title, turns: state.conversation });
   } else {
     const idx = threads.findIndex(t => t.id === state.currentThreadId);
-    if (idx !== -1) {
-      threads[idx].turns = state.conversation;
-    }
+    if (idx !== -1) threads[idx].turns = state.conversation;
   }
+  // Keep only last 20 threads
+  if (threads.length > 20) threads = threads.slice(0, 20);
   saveThreads(threads);
   renderSidebarThreads();
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   FORMAT HELPERS
+═══════════════════════════════════════════════════════════════ */
 function formatAnswerHTML(answer) {
   let answerHtml = answer;
-  let warningHtml = "";
+  let warningHtml = '';
 
-  const mismatchRegex = /\*\*(Mismatch in Disease Cohort:|Mismatch Alert:)\*\*([\s\S]*?)(?=\n\n|\*\*Local Standard Treatment Guidelines|\*\*Local Standard|\*\*Comparison|$)/i;
+  const mismatchRegex = /\*\*(Mismatch in Disease Cohort:|Mismatch Alert:|Evidence Alert:)\*\*([\s\S]*?)(?=\n\n|\*\*|$)/i;
   const match = answerHtml.match(mismatchRegex);
   if (match) {
-    const fullMatch = match[0];
-    const alertTitle = match[1];
-    const alertBody = match[2].trim();
     warningHtml = `
       <div class="warning-banner">
         <i class="ti ti-alert-triangle"></i>
         <div class="warning-banner-text">
-          <strong>${alertTitle}</strong> ${alertBody.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+          <strong>${match[1]}</strong> ${match[2].trim().replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}
         </div>
-      </div>
-    `;
-    answerHtml = answerHtml.replace(fullMatch, "");
+      </div>`;
+    answerHtml = answerHtml.replace(match[0], '');
   }
 
-  // Replace headers with stylized tags
+  // Add inline [N] citation markers — replace [1], [2], etc. with superscript spans
   let parsedText = answerHtml
-    .replace(/\*\*(Local Standard Treatment Guidelines Context:|Ghana Standard Treatment Guidelines Context:|Comparison with Local Standard Treatment Guidelines:|Resource-Aware Clinical Adjustments:|NHIS Coverage:|Potential Long-term Effects of SGLT2 Inhibitors:|Potential Long-term Effects:)\*\*/gi, '<h3>$1</h3>')
+    .replace(/\*\*(Local Standard Treatment Guidelines.*?:|Ghana Standard Treatment.*?:|Comparison.*?:|Resource-Aware.*?:|NHIS Coverage:)\*\*/gi, '<h3>$1</h3>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[(\d+)\]/g, '<cite class="cite-ref" title="Source $1">$1</cite>')
     .replace(/\n\n/g, '<br><br>')
     .replace(/\n/g, ' ');
 
   return { warningHtml, parsedText };
 }
 
-function renderTurnDOM(turn) {
-  const results = document.getElementById('results');
-  const infoPanel = document.getElementById('info-panel');
+function buildAmbientRow(data) {
+  const conf = data.confidence || 'Unknown';
+  const confClass = conf === 'High' ? 'amb-high' : conf === 'Moderate' ? 'amb-moderate' : 'amb-low';
+  const region = data.region_summary || 'Unknown';
+  const regionClass = region === 'Regional' ? 'amb-regional' : '';
 
-  const turnEl = document.createElement('div');
-  turnEl.className = 'thread-turn';
-
-  // Question Row
-  const qRow = document.createElement('div');
-  qRow.className = 'thread-q';
-  const bubble = document.createElement('div');
-  bubble.className = 'thread-q-bubble';
-  bubble.textContent = turn.question;
-  qRow.appendChild(bubble);
-  turnEl.appendChild(qRow);
-
-  // Retrieved Papers Card
-  if (turn.papers && turn.papers.length) {
-    const scEl = document.createElement('div');
-    scEl.className = 'stream-card';
-    scEl.innerHTML = `
-      <div class="stream-hdr">
-        <div class="stream-hdr-left">
-          <i class="ti ti-library"></i>
-          <span>Retrieved Evidence</span>
-        </div>
-        <span class="stream-time">PubMed</span>
+  return `
+    <div class="ambient-row">
+      <div class="amb-item">
+        <span class="amb-label">Papers</span>
+        <span class="amb-val">${data.papers_matched || 0}</span>
       </div>
-      <div class="stream-papers">
-        ${turn.papers.map(p => `
-          <a href="${p.url}" target="_blank" rel="noopener noreferrer" class="paper-card">
-            <span class="journal-pill">${p.journal.split(' ').slice(0, 2).join(' ')}</span>
-            <div class="paper-title">${p.title}</div>
-            <div class="paper-meta">
-              <span>${p.authors}</span> · (${p.year})
-              <span class="paper-status status-retrieved">Retrieved</span>
-            </div>
-          </a>
-        `).join('')}
+      <span class="amb-dot"></span>
+      <div class="amb-item">
+        <span class="amb-label">Evidence Year</span>
+        <span class="amb-val">${data.evidence_year || 'N/A'}</span>
       </div>
-    `;
-    turnEl.appendChild(scEl);
-  }
-
-  // Answer Card
-  const formatted = formatAnswerHTML(turn.answer);
-  const acEl = document.createElement('div');
-  acEl.className = 'answer-card';
-  acEl.innerHTML = `
-    <div class="answer-hdr">
-      <div class="answer-hdr-left">
-        <i class="ti ti-stethoscope"></i>
-        Evidence-based answer
+      <span class="amb-dot"></span>
+      <div class="amb-item">
+        <span class="amb-badge ${confClass}">${conf} Confidence</span>
       </div>
-      <span class="badge badge-gray">Research use only</span>
-    </div>
-    <div class="answer-body">
-      ${formatted.warningHtml}
-      <div class="ac-text">${formatted.parsedText}</div>
-      
-      <!-- Ghana NHIS Widget -->
-      <div class="nhis-widget" style="display:none">
-        <div class="nhis-widget-label">GHANA NHIS MEDICATION REGISTRY</div>
-        <div class="nhis-meds"></div>
-      </div>
-
-      <div class="conf-row">
-        <span class="conf-label">EVIDENCE CONFIDENCE</span>
-        <div class="conf-track"><div class="conf-fill" style="width: ${turn.confidence}%"></div></div>
-        <span class="conf-pct">${turn.confidence}%</span>
-      </div>
-      <div class="sources-strip">
-        <div class="sources-strip-label">SOURCES</div>
-        <div class="sources-scroll">
-          ${turn.sources.map((url, idx) => {
-            const pmid = url.split('/').filter(Boolean).pop();
-            return `<a class="source-chip" href="${url}" target="_blank" rel="noopener noreferrer"><span class="source-chip-num">${idx + 1}</span> PMID ${pmid} <i class="ti ti-external-link"></i></a>`;
-          }).join('')}
-        </div>
+      <span class="amb-dot"></span>
+      <div class="amb-item">
+        <span class="amb-badge ${regionClass}">${region}</span>
       </div>
     </div>
   `;
-  
-  // Populate NHIS drugs if available in turn
-  const nhisEl = acEl.querySelector('.nhis-widget');
-  const medsEl = acEl.querySelector('.nhis-meds');
-  if (turn.drugs && turn.drugs.length) {
-    nhisEl.style.display = 'block';
-    turn.drugs.forEach(d => {
-      const div = document.createElement('div');
-      div.className = 'nhis-med-row';
-      const statusClass = d.nhis === 'Covered' ? 'status-covered' : 'status-free';
-      div.innerHTML = `
-        <span class="nhis-med-name">${d.name}</span>
-        <span class="nhis-med-status ${statusClass}">${d.nhis}</span>
-        <span class="nhis-med-avail">${d.status}</span>
-      `;
-      medsEl.appendChild(div);
-    });
+}
+
+function buildSourceList(sources) {
+  if (!sources || !sources.length) return '';
+  const rows = sources.slice(0,8).map(s => {
+    const pct   = Math.round((s.relevance || 0) * 100);
+    const fillCls = pct >= 80 ? 'src-fill-high' : pct >= 50 ? 'src-fill-mid' : 'src-fill-low';
+    const tagCls  = s.region_tag === 'regional' ? 'tag-regional' : s.region_tag === 'adjacent' ? 'tag-adjacent' : 'tag-extrapolated';
+    const authorStr = Array.isArray(s.authors) ? s.authors.slice(0,2).join(', ') : (s.authors || '');
+    return `
+      <div class="source-row">
+        <div class="src-idx">${s.index || ''}</div>
+        <div class="src-info">
+          <a class="src-title-link" href="${s.url}" target="_blank" rel="noopener noreferrer">${s.title || 'Untitled'}</a>
+          <div class="src-meta">${authorStr}${s.year ? ' · ' + s.year : ''}${s.journal ? ' · ' + s.journal : ''}</div>
+        </div>
+        <div class="src-relevance-wrap">
+          <div class="src-bar"><div class="src-fill ${fillCls}" style="width:${pct}%"></div></div>
+          <span class="src-score">${pct}%</span>
+          <span class="src-region-tag ${tagCls}">${s.region_tag || ''}</span>
+        </div>
+      </div>`;
+  }).join('');
+  return `<div class="source-list">
+    <div class="source-list-label">SOURCES</div>
+    ${rows}
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DOM BUILDING
+═══════════════════════════════════════════════════════════════ */
+function renderTurnDOM(turn) {
+  const results = document.getElementById('results');
+  const infoPanel = document.getElementById('info-panel');
+  const turnEl = document.createElement('div');
+  turnEl.className = 'thread-turn fade-in';
+
+  // Question
+  const qRow = document.createElement('div');
+  qRow.className = 'thread-q';
+  qRow.innerHTML = `<div class="thread-q-bubble">${turn.question}</div>`;
+  turnEl.appendChild(qRow);
+
+  if (turn.bypassed || turn.using_own_knowledge) {
+    const bubble = document.createElement('div');
+    bubble.className = 'convo-reply';
+    const knowledgeNote = turn.using_own_knowledge ? `<div class="knowledge-note"><i class="ti ti-brain"></i> Using my knowledge</div>` : '';
+    bubble.innerHTML = `
+      <div class="convo-avatar"><i class="ti ti-stethoscope"></i></div>
+      <div class="convo-text">${knowledgeNote}${turn.answer.replace(/\n/g,'<br>')}</div>
+    `;
+    turnEl.appendChild(bubble);
+  } else {
+    const formatted = formatAnswerHTML(turn.answer || '');
+    const ac = document.createElement('div');
+    ac.className = 'answer-card';
+
+    // Ambient badge
+    const ambHtml = buildAmbientRow(turn);
+    // Source list
+    const srcHtml = buildSourceList(turn.sources || []);
+
+    ac.innerHTML = `
+      <div class="answer-hdr">
+        <div class="answer-hdr-left"><i class="ti ti-stethoscope"></i> Evidence-based answer</div>
+        <span class="badge badge-gray">Research use only</span>
+      </div>
+      ${ambHtml}
+      <div class="answer-body">
+        ${formatted.warningHtml}
+        <div class="ac-text">${formatted.parsedText}</div>
+        ${srcHtml}
+      </div>
+    `;
+    turnEl.appendChild(ac);
   }
 
-  turnEl.appendChild(acEl);
-
-  // Suggested Followups
+  // Follow-up chips
   if (turn.followups && turn.followups.length) {
-    const fuEl = document.createElement('div');
-    fuEl.className = 'fu-wrap';
-    fuEl.innerHTML = '<div class="fu-label">SUGGESTED FOLLOW-UPS</div>';
+    const fu = document.createElement('div');
+    fu.className = 'chips-wrap';
+    fu.innerHTML = '<div class="chips-label">FOLLOW-UP</div><div class="chip-row"></div>';
+    const cr = fu.querySelector('.chip-row');
     turn.followups.forEach(fq => {
-      const btn = document.createElement('button');
-      btn.className = 'fu-btn';
-      btn.innerHTML = `<i class="ti ti-arrow-right"></i> ${fq}`;
-      btn.onclick = () => fillQ(fq);
-      fuEl.appendChild(btn);
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.innerHTML = `<i class="ti ti-arrow-right"></i>${fq}`;
+      chip.onclick = () => fillQ(fq);
+      cr.appendChild(chip);
     });
-    turnEl.appendChild(fuEl);
+    turnEl.appendChild(fu);
   }
 
   results.insertBefore(turnEl, infoPanel);
 }
 
-// ── Sun/Moon Mode Switcher ────────────────────────────────────
-function toggleTheme() {
-  const body = document.body;
-  const icon = document.getElementById('theme-icon');
-  if (body.classList.contains('light-theme')) {
-    body.classList.remove('light-theme');
-    icon.className = 'ti ti-sun';
-    localStorage.setItem('evidance_theme', 'dark');
-  } else {
-    body.classList.add('light-theme');
-    icon.className = 'ti ti-moon';
-    localStorage.setItem('evidance_theme', 'light');
-  }
+function buildAnswerCard() {
+  const el = document.createElement('div');
+  el.className = 'answer-card';
+  el.innerHTML = `
+    <div class="answer-hdr">
+      <div class="answer-hdr-left ac-hdr-left"><i class="ti ti-stethoscope ac-hdr-icon"></i><span class="ac-hdr-title">Evidence-based answer</span></div>
+      <span class="badge badge-gray ac-hdr-badge">Research use only</span>
+    </div>
+    <div class="ac-ambient-row"></div>
+    <div class="answer-body">
+      <div class="ac-warning"></div>
+      <div class="ac-text"></div>
+      <div class="nhis-widget" style="display:none">
+        <div class="nhis-widget-label">GHANA NHIS MEDICATION REGISTRY</div>
+        <div class="nhis-meds"></div>
+      </div>
+      <div class="ac-source-list"></div>
+    </div>
+  `;
+  return { el };
 }
 
-function loadTheme() {
-  const theme = localStorage.getItem('evidance_theme') || 'dark';
-  const body = document.body;
-  const icon = document.getElementById('theme-icon');
-  if (theme === 'light') {
-    body.classList.add('light-theme');
-    if (icon) icon.className = 'ti ti-moon';
-  } else {
-    body.classList.remove('light-theme');
-    if (icon) icon.className = 'ti ti-sun';
-  }
-}
-
-// ── Toggles ───────────────────────────────────────────────────
-const togKeys = { wa: 'togWA', st: 'togST', eml: 'togEML', wiki: 'togWiki' };
-function toggle(k) {
-  state[togKeys[k]] = !state[togKeys[k]];
-  const on = state[togKeys[k]];
-  const el = document.getElementById('tog-' + k);
-  const th = el.querySelector('.tog-thumb');
-  el.className = 'tog ' + (on ? 'tog-on' : 'tog-off');
-  th.className = 'tog-thumb ' + (on ? 'ton' : 'toff');
-}
-
-// ── Disease filter ────────────────────────────────────────────
-function setFilter(el, term) {
-  document.querySelectorAll('.filter').forEach(f => {
-    f.classList.remove('active');
-    const d = f.querySelector('.filter-dot');
-    if (d) d.remove();
-  });
-  el.classList.add('active');
-  const dot = document.createElement('span');
-  dot.className = 'filter-dot';
-  el.appendChild(dot);
-  state.filter = term;
-}
-
-// ── Textarea ──────────────────────────────────────────────────
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
-function checkSend() {
-  const v   = document.getElementById('ta').value.trim();
-  const btn = document.getElementById('send-btn');
-  btn.className = 'send-btn' + (v.length >= 1 ? ' active' : '');
-}
-function fillQ(q) {
-  const ta = document.getElementById('ta');
-  ta.value = q;
-  ta.focus();
-  autoResize(ta);
-  checkSend();
-}
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    if (document.getElementById('send-btn').classList.contains('active')) handleSend();
-  }
-}
-
-// ── Send ──────────────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
+   SEND FLOW
+═══════════════════════════════════════════════════════════════ */
 function handleSend() {
   const ta = document.getElementById('ta');
-  let q    = ta.value.trim();
-  if (q.length < 1) return;
-
-  const displayQ = q;
-  if (state.filter) q = q + ' ' + state.filter;
-
+  const q = ta.value.trim();
+  if (!q) return;
   ta.value = '';
   ta.style.height = 'auto';
   document.getElementById('send-btn').className = 'send-btn';
-
   showResultsArea();
-  appendTurn(displayQ);
+  appendTurnShell(q);
   state.startTime = Date.now();
-
-  if (state.togST) {
-    streamQuestion(q, displayQ);
-  } else {
-    fetchQuestion(q, displayQ);
-  }
+  streamQuestion(q);
 }
 
 function showResultsArea() {
   document.getElementById('empty-state').style.display = 'none';
-  document.getElementById('results').style.display     = 'flex';
+  document.getElementById('results').style.display = 'flex';
 }
 
-function appendTurn(question) {
-  const results   = document.getElementById('results');
+function appendTurnShell(question) {
+  const results = document.getElementById('results');
   const infoPanel = document.getElementById('info-panel');
-
   const turn = document.createElement('div');
   turn.className = 'thread-turn';
 
-  // User question bubble (right-aligned)
-  const qRow   = document.createElement('div');
+  // Question bubble
+  const qRow = document.createElement('div');
   qRow.className = 'thread-q';
-  const bubble = document.createElement('div');
-  bubble.className = 'thread-q-bubble';
-  bubble.textContent = question;
-  qRow.appendChild(bubble);
+  qRow.innerHTML = `<div class="thread-q-bubble">${question}</div>`;
   turn.appendChild(qRow);
 
-  // Stream card (renders retrieved papers directly)
-  const sc = buildStreamCard();
-  turn.appendChild(sc.el);
-  state.currentStreamCard = sc;
+  // Reasoning trace bar
+  const trace = buildTraceBar();
+  turn.appendChild(trace.el);
+  state.currentTraceBar = trace;
 
-  // Answer card (hidden until done)
+  // Answer card (hidden)
   const ac = buildAnswerCard();
   ac.el.style.display = 'none';
   turn.appendChild(ac.el);
   state.currentAnswerCard = ac;
 
-  // Error card (hidden until error)
+  // Error card
   const ec = document.createElement('div');
   ec.className = 'error-card';
   ec.innerHTML = '<div class="error-text"><i class="ti ti-alert-circle"></i><span class="ec-msg">Something went wrong.</span></div>';
   turn.appendChild(ec);
   state.currentErrorCard = ec;
 
-  // Follow-ups (hidden until done)
+  // Follow-up chips wrap
   const fu = document.createElement('div');
-  fu.className = 'fu-wrap';
+  fu.className = 'chips-wrap';
   fu.style.display = 'none';
   turn.appendChild(fu);
   state.currentFuWrap = fu;
 
-  // Insert before info panel
   results.insertBefore(turn, infoPanel);
-
   setTimeout(() => turn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
 }
 
-// ── Build Paper-level stream card ─────────────────────────────
-function buildStreamCard() {
-  const el = document.createElement('div');
-  el.className = 'stream-card';
+/* ═══════════════════════════════════════════════════════════════
+   SSE STREAMING
+═══════════════════════════════════════════════════════════════ */
+function streamQuestion(question) {
+  const activeSources = state.settings.active_sources || ['pubmed','europepmc','semanticscholar','openalex'];
+  showToolsBtn(activeSources);
 
-  const isWiki = state.togWiki;
-  const title = isWiki ? 'Analyzing Wikipedia Evidence' : 'Analyzing PubMed Evidence';
-  const loadingMsg = isWiki ? 'Searching Wikipedia for article summaries...' : 'Searching PubMed for literature...';
+  const canvas = getCanvasContext();
 
-  el.innerHTML = `
-    <div class="stream-hdr">
-      <div class="stream-hdr-left">
-        <i class="ti ti-library"></i>
-        <span class="sc-title">${title}</span>
-      </div>
-      <span class="stream-time sc-time"></span>
-    </div>
-    <div class="stream-papers" id="stream-papers">
-      <div class="searching-pulse">
-        <span class="pulse"></span> ${loadingMsg}
-      </div>
-    </div>
-    <div class="stream-status" id="stream-status" style="display:none">
-      <span class="pulse"></span> Synthesizing evidence-based answer...
-    </div>
-  `;
-
-  const papersContainer = el.querySelector('#stream-papers');
-  const statusContainer = el.querySelector('#stream-status');
-  const titleEl = el.querySelector('.sc-title');
-  const timeEl = el.querySelector('.sc-time');
-
-  function renderPapers(papers) {
-    papersContainer.innerHTML = '';
-    if (!papers || !papers.length) {
-      papersContainer.innerHTML = '<div class="searching-pulse"><span class="pulse"></span> Analyzing PubMed matches...</div>';
-      return;
-    }
-
-    papers.forEach(p => {
-      const a = document.createElement('a');
-      a.className = 'paper-card';
-      a.href = p.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.innerHTML = `
-        <span class="journal-pill">${p.journal.split(' ').slice(0, 2).join(' ')}</span>
-        <div class="paper-title">${p.title}</div>
-        <div class="paper-meta">
-          <span>${p.authors}</span> · (${p.year})
-          <span class="paper-status status-analyzing"><span class="pulse"></span> Analyzing</span>
-        </div>
-      `;
-      papersContainer.appendChild(a);
-    });
-  }
-
-  function setPapersRetrieved() {
-    el.querySelectorAll('.paper-status').forEach(badge => {
-      badge.className = 'paper-status status-retrieved';
-      badge.textContent = 'Retrieved';
-    });
-  }
-
-  function showSynthesizing() {
-    statusContainer.style.display = 'flex';
-  }
-
-  function finish(elapsed) {
-    titleEl.textContent = 'Retrieved Evidence';
-    timeEl.textContent = elapsed;
-    statusContainer.style.display = 'none';
-    setPapersRetrieved();
-  }
-
-  return { el, renderPapers, showSynthesizing, finish };
-}
-
-// ── Build answer card ─────────────────────────────────────────
-function buildAnswerCard() {
-  const el = document.createElement('div');
-  el.className = 'answer-card';
-  el.innerHTML = `
-    <div class="answer-hdr">
-      <div class="answer-hdr-left ac-hdr-left">
-        <i class="ti ti-stethoscope ac-hdr-icon"></i>
-        <span class="ac-hdr-title">Evidence-based answer</span>
-      </div>
-      <span class="badge badge-gray ac-hdr-badge">Research use only</span>
-    </div>
-    <div class="answer-body">
-      <div class="ac-warning"></div>
-      <div class="ac-text"></div>
-      
-      <!-- Ghana NHIS Widget -->
-      <div class="nhis-widget" style="display:none">
-        <div class="nhis-widget-label">GHANA NHIS MEDICATION REGISTRY</div>
-        <div class="nhis-meds"></div>
-      </div>
-
-      <div class="conf-row">
-        <span class="conf-label">EVIDENCE CONFIDENCE</span>
-        <div class="conf-track"><div class="conf-fill ac-fill"></div></div>
-        <span class="conf-pct ac-pct">0%</span>
-      </div>
-      <div class="sources-strip">
-        <div class="sources-strip-label">SOURCES</div>
-        <div class="sources-scroll ac-sources"></div>
-      </div>
-    </div>
-  `;
-  return { el };
-}
-
-// ── Populate answer card with final data ──────────────────────
-function showAnswer(data) {
-  const isBypassed = data.bypassed === true;
-  
-  const turn = {
-    question:   data.question   || '',
-    answer:     data.answer     || '',
-    sources:    data.sources    || [],
-    confidence: data.confidence || 0,
-    followups:  data.followups  || [],
-    papers:     data.papers     || [],
-    drugs:      data.drugs      || [],
-    bypassed:   isBypassed,
-  };
-  
-  state.conversation.push(turn);
-  persistCurrentThread();
-
-  // ── Conversational bypass: render a simple chat bubble ──
-  if (isBypassed) {
-    // Hide the placeholder answer card
-    const ac = state.currentAnswerCard.el;
-    ac.style.display = 'none';
-    // Hide follow-up wrap
-    const fu = state.currentFuWrap;
-    fu.style.display = 'none';
-
-    // Build a simple left-aligned reply bubble instead
-    const bubble = document.createElement('div');
-    bubble.className = 'convo-reply';
-    bubble.innerHTML = `
-      <div class="convo-avatar"><i class="ti ti-stethoscope"></i></div>
-      <div class="convo-text">${turn.answer.replace(/\n/g, '<br>')}</div>
-    `;
-    // Insert right after the stream card inside the thread-turn
-    const sc = state.currentStreamCard.el;
-    sc.parentNode.insertBefore(bubble, ac);
-    setTimeout(() => bubble.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
-    return;
-  }
-
-  // ── Full evidence-based answer card ──
-  const ac = state.currentAnswerCard.el;
-  ac.style.display = 'block';
-
-  // If this is a source-verification turn, update the card header
-  if (turn.evidence_seeking) {
-    const hdrIcon = ac.querySelector('.ac-hdr-icon');
-    const hdrTitle = ac.querySelector('.ac-hdr-title');
-    const hdrBadge = ac.querySelector('.ac-hdr-badge');
-    if (hdrIcon) hdrIcon.className = 'ti ti-certificate ac-hdr-icon';
-    if (hdrTitle) hdrTitle.textContent = 'Source Verification';
-    if (hdrBadge) hdrBadge.textContent = 'Real PubMed papers only';
-  }
-
-  // Answer text & warning banner formatting using shared helper
-  const formatted = formatAnswerHTML(turn.answer);
-  ac.querySelector('.ac-warning').innerHTML = formatted.warningHtml;
-  ac.querySelector('.ac-text').innerHTML = formatted.parsedText;
-
-  // Ghana NHIS drug registry rendering
-  const nhisEl = ac.querySelector('.nhis-widget');
-  const medsEl = ac.querySelector('.nhis-meds');
-  if (turn.drugs && turn.drugs.length) {
-    nhisEl.style.display = 'block';
-    medsEl.innerHTML = '';
-    turn.drugs.forEach(d => {
-      const div = document.createElement('div');
-      div.className = 'nhis-med-row';
-      const statusClass = d.nhis === 'Covered' ? 'status-covered' : 'status-free';
-      div.innerHTML = `
-        <span class="nhis-med-name">${d.name}</span>
-        <span class="nhis-med-status ${statusClass}">${d.nhis}</span>
-        <span class="nhis-med-avail">${d.status}</span>
-      `;
-      medsEl.appendChild(div);
-    });
-  } else {
-    nhisEl.style.display = 'none';
-  }
-
-  // Confidence bar
-  setTimeout(() => {
-    ac.querySelector('.ac-fill').style.width = turn.confidence + '%';
-    ac.querySelector('.ac-pct').textContent  = turn.confidence + '%';
-  }, 100);
-
-  // Sources strip
-  const sourcesEl = ac.querySelector('.ac-sources');
-  sourcesEl.innerHTML = '';
-  turn.sources.forEach((url, idx) => {
-    const pmid = url.split('/').filter(Boolean).pop();
-    const a    = document.createElement('a');
-    a.className = 'source-chip';
-    a.href      = url;
-    a.target    = '_blank';
-    a.rel       = 'noopener noreferrer';
-    a.innerHTML = `<span class="source-chip-num">${idx + 1}</span> PMID ${pmid} <i class="ti ti-external-link"></i>`;
-    sourcesEl.appendChild(a);
-  });
-
-  // Follow-up buttons
-  const fu = state.currentFuWrap;
-  fu.innerHTML = '<div class="fu-label">SUGGESTED FOLLOW-UPS</div>';
-  fu.style.display = 'flex';
-  turn.followups.forEach(fq => {
-    const btn = document.createElement('button');
-    btn.className = 'fu-btn';
-    btn.innerHTML = `<i class="ti ti-arrow-right"></i> ${fq}`;
-    btn.onclick   = () => fillQ(fq);
-    fu.appendChild(btn);
-  });
-
-  document.getElementById('pdf-btn').style.display  = 'flex';
-  document.getElementById('copy-btn').style.display = 'flex';
-
-  setTimeout(() => ac.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
-}
-
-// ── SSE streaming fetch ───────────────────────────────────────
-function streamQuestion(question, displayQ) {
-  fetch('/api/ask/stream/', {
+  fetch('/api/retrieval/query/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
     body: JSON.stringify({
-      question:           question,
-      west_africa_filter: state.togWA,
-      wikipedia_mode:     state.togWiki,
-      history: state.conversation.map(t => ({
-        question: t.question,
-        answer:   t.answer,
-      })),
+      question,
+      history: state.conversation.map(t => ({ question: t.question, answer: t.answer })),
+      canvas_context: canvas,
     }),
   })
   .then(res => {
-    const reader  = res.body.getReader();
+    const reader = res.body.getReader();
     const decoder = new TextDecoder();
-    let   buffer  = '';
-
+    let buffer = '';
     function read() {
       reader.read().then(({ done, value }) => {
         if (done) return;
         buffer += decoder.decode(value, { stream: true });
-
         const parts = buffer.split('\n\n');
         buffer = parts.pop();
-
         parts.forEach(part => {
           const line = part.trim();
           if (!line.startsWith('data:')) return;
           try {
             const data = JSON.parse(line.slice(5).trim());
-            handleSSEEvent(data, displayQ);
+            handleSSEEvent(data, question);
           } catch(_) {}
         });
         read();
@@ -1331,198 +1850,272 @@ function streamQuestion(question, displayQ) {
   .catch(err => showTurnError(err.message));
 }
 
-function handleSSEEvent(data, displayQ) {
-  const sc      = state.currentStreamCard;
+function handleSSEEvent(data, question) {
+  const trace = state.currentTraceBar;
   const elapsed = ((Date.now() - state.startTime) / 1000).toFixed(1) + 's';
 
-  switch (data.stage) {
+  switch (data.step) {
     case 'searching':
-      sc.el.querySelector('#stream-papers').innerHTML = `
-        <div class="searching-pulse">
-          <span class="pulse"></span> ${data.message}
-        </div>
-      `;
-      if (state.togWiki || (data.message && data.message.includes('Wikipedia'))) {
-        sc.el.querySelector('.sc-title').textContent = 'Analyzing Wikipedia Evidence';
-      }
+      if (trace) trace.update('searching', data.source, data.query, null);
+      if (data.source) updateToolStatus(data.source, 'fetching', 0, data.query);
       break;
-    case 'found':
-      sc.renderPapers(data.papers);
-      break;
-    case 'embedding':
-      // Progress step
-      break;
+
     case 'retrieving':
-      // Match analysis complete
+      if (trace) trace.update('retrieving', data.source, null, data.count);
+      if (data.source) updateToolStatus(data.source, 'done', data.count || 0);
       break;
-    case 'generating':
-      if (data.bypassed) {
-        sc.el.style.display = 'none';
-      } else {
-        sc.showSynthesizing();
-      }
+
+    case 'filtering':
+      if (trace) trace.update('filtering', null, null, data.count);
       break;
-    case 'answering':
-      // Synthesizing followup questions
+
+    case 'synthesizing':
+      if (trace) trace.update('synthesizing', null, null, null);
       break;
+
     case 'done':
-      if (data.bypassed) {
-        sc.el.style.display = 'none';
-      } else {
-        sc.finish(elapsed);
-      }
-      showAnswer({ ...data, question: displayQ });
+      if (trace) trace.finish();
+      hideToolsBtn();
+      showAnswer({ ...data, question });
       break;
+
     case 'error':
+      hideToolsBtn();
+      if (trace) trace.finish();
       showTurnError(data.message);
       break;
   }
 }
 
-// ── Standard REST fetch (stream steps OFF) ────────────────────
-function fetchQuestion(question, displayQ) {
-  fetch('/api/ask/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-    body: JSON.stringify({
-      question:           question,
-      west_africa_filter: state.togWA,
-      wikipedia_mode:     state.togWiki,
-      history: state.conversation.map(t => ({
-        question: t.question,
-        answer:   t.answer,
-      })),
-    }),
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (data.error) { showTurnError(data.error); return; }
-    // Render papers directly inside stream card immediately upon done
-    if (state.currentStreamCard) {
-      if (data.bypassed) {
-        state.currentStreamCard.el.style.display = 'none';
-      } else {
-        state.currentStreamCard.renderPapers(data.papers);
-        state.currentStreamCard.finish(((Date.now() - state.startTime) / 1000).toFixed(1) + 's');
-      }
-    }
-    showAnswer({ ...data, question: displayQ });
-  })
-  .catch(err => showTurnError(err.message));
+/* ═══════════════════════════════════════════════════════════════
+   SHOW ANSWER
+═══════════════════════════════════════════════════════════════ */
+function showAnswer(data) {
+  const turn = {
+    question:          data.question || '',
+    answer:            data.answer || '',
+    sources:           data.sources || [],
+    confidence:        data.confidence || 'Low',
+    papers_matched:    data.papers_matched || 0,
+    evidence_year:     data.evidence_year,
+    region_summary:    data.region_summary || 'Extrapolated',
+    followups:         data.followup_chips || data.followups || [],
+    drugs:             (data.canvas_update || {}).drugs || [],
+    bypassed:          data.bypassed || false,
+    using_own_knowledge: data.using_own_knowledge || false,
+    disambiguation:    data.disambiguation || null,
+  };
+
+  state.conversation.push(turn);
+  persistCurrentThread();
+
+  // Update canvas if agent found drugs
+  if (turn.drugs && turn.drugs.length && state.canvasSessionId) {
+    const existing = getTagsFromList('cv-drugs-list');
+    const newDrugs = turn.drugs.filter(d => !existing.includes(typeof d === 'string' ? d : d.name));
+    newDrugs.forEach(d => {
+      const name = typeof d === 'string' ? d : d.name;
+      const el = document.getElementById('cv-drugs-list');
+      const tag = document.createElement('div');
+      tag.className = 'canvas-tag';
+      tag.innerHTML = `${name} <span class="canvas-tag-remove" onclick="removeCanvasTag('cv-drugs-list','${name}','drug')">×</span>`;
+      el.appendChild(tag);
+    });
+    saveCanvas();
+  }
+
+  if (turn.bypassed || turn.using_own_knowledge) {
+    const ac = state.currentAnswerCard.el;
+    ac.style.display = 'none';
+    state.currentFuWrap.style.display = 'none';
+    const bubble = document.createElement('div');
+    bubble.className = 'convo-reply fade-in';
+    const knowledgeNote = turn.using_own_knowledge ? `<div class="knowledge-note"><i class="ti ti-brain"></i> Using my knowledge</div>` : '';
+    bubble.innerHTML = `
+      <div class="convo-avatar"><i class="ti ti-stethoscope"></i></div>
+      <div class="convo-text">${knowledgeNote}${turn.answer.replace(/\n/g,'<br>')}</div>
+    `;
+    const sc = state.currentAnswerCard.el;
+    sc.parentNode.insertBefore(bubble, sc);
+    setTimeout(() => bubble.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
+    return;
+  }
+
+  // Evidence answer card
+  const ac = state.currentAnswerCard.el;
+  ac.style.display = 'block';
+  ac.classList.add('fade-in');
+
+  // Ambient row
+  const ambEl = ac.querySelector('.ac-ambient-row');
+  ambEl.innerHTML = buildAmbientRow(turn);
+
+  // Answer text
+  const formatted = formatAnswerHTML(turn.answer);
+  ac.querySelector('.ac-warning').innerHTML = formatted.warningHtml;
+  ac.querySelector('.ac-text').innerHTML = formatted.parsedText;
+
+  // NHIS drugs
+  const nhisEl = ac.querySelector('.nhis-widget');
+  const medsEl = ac.querySelector('.nhis-meds');
+  if (turn.drugs && turn.drugs.length) {
+    nhisEl.style.display = 'block';
+    medsEl.innerHTML = '';
+    turn.drugs.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'nhis-med-row';
+      const statusClass = d.nhis === 'Covered' ? 'status-covered' : 'status-free';
+      div.innerHTML = `<span class="nhis-med-name">${d.name}</span><span class="nhis-med-status ${statusClass}">${d.nhis}</span><span class="nhis-med-avail">${d.status}</span>`;
+      medsEl.appendChild(div);
+    });
+  }
+
+  // Inline sources list
+  ac.querySelector('.ac-source-list').innerHTML = buildSourceList(turn.sources);
+
+  // Follow-up + disambiguation chips
+  const fu = state.currentFuWrap;
+  fu.innerHTML = '<div class="chips-label">FOLLOW-UP</div><div class="chip-row" id="fu-chip-row"></div>';
+  fu.style.display = 'flex';
+  const cr = fu.querySelector('.chip-row');
+  (turn.followups || []).slice(0,3).forEach(fq => {
+    const chip = document.createElement('button');
+    chip.className = 'chip';
+    chip.innerHTML = `<i class="ti ti-arrow-right"></i>${fq}`;
+    chip.onclick = () => fillQ(fq);
+    cr.appendChild(chip);
+  });
+  if (turn.disambiguation) {
+    const disambig = document.createElement('div');
+    disambig.innerHTML = '<div class="chips-label" style="margin-top:8px">DID YOU MEAN</div><div class="chip-row"></div>';
+    const dcr = disambig.querySelector('.chip-row');
+    turn.disambiguation.forEach(opt => {
+      const chip = document.createElement('button');
+      chip.className = 'chip disambiguation';
+      chip.innerHTML = `<i class="ti ti-question-mark"></i>${opt}`;
+      chip.onclick = () => fillQ(opt);
+      dcr.appendChild(chip);
+    });
+    fu.appendChild(disambig);
+  }
+
+  document.getElementById('pdf-btn').style.display = 'flex';
+  document.getElementById('copy-btn').style.display = 'flex';
+  setTimeout(() => ac.scrollIntoView({ behavior:'smooth', block:'nearest' }), 80);
 }
 
-// ── Error display ─────────────────────────────────────────────
+/* ═══════════════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════════════ */
 function showTurnError(msg) {
   const ec = state.currentErrorCard;
   if (!ec) return;
   ec.querySelector('.ec-msg').textContent = msg || 'Something went wrong.';
   ec.classList.add('show');
+  hideToolsBtn();
 }
 
-// ── PDF export ────────────────────────────────────────────────
-function showModal() {
-  if (!state.conversation.length) return;
-  document.getElementById('modal').classList.add('show');
-  setTimeout(() => document.getElementById('name-input').focus(), 100);
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+function checkSend() {
+  const v = document.getElementById('ta').value.trim();
+  document.getElementById('send-btn').className = 'send-btn' + (v.length ? ' active' : '');
 }
-function hideModal() {
-  document.getElementById('modal').classList.remove('show');
+function fillQ(q) {
+  const ta = document.getElementById('ta');
+  ta.value = q; ta.focus(); autoResize(ta); checkSend();
 }
-function hideModalOutside(e) {
-  if (e.target === document.getElementById('modal')) hideModal();
-}
-
-async function confirmPDF() {
-  if (!state.conversation.length) return;
-  const name = document.getElementById('name-input').value.trim() || 'Anonymous';
-
-  let r;
-  try {
-    r = await fetch('/api/pdf/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-      body: JSON.stringify({
-        history: state.conversation.map(t => ({
-          question:   t.question,
-          answer:     t.answer,
-          sources:    t.sources,
-          confidence: t.confidence,
-          drugs:      t.drugs
-        })),
-        name,
-      }),
-    });
-  } catch (err) {
-    hideModal();
-    showTurnError('Network error: ' + err.message);
-    return;
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (document.getElementById('send-btn').classList.contains('active')) handleSend();
   }
-
-  if (!r.ok) {
-    let errMsg = 'PDF generation failed (' + r.status + ')';
-    try {
-      const body = await r.json();
-      if (body.error) errMsg = body.error;
-    } catch (_) {}
-    hideModal();
-    showTurnError(errMsg);
-    return;
-  }
-
-  const blob = await r.blob();
-  const url  = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href  = url;
-  link.download = 'evidance-clinical-report.pdf';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-  hideModal();
 }
 
-// ── Copy last answer ──────────────────────────────────────────
+function toggleTheme() {
+  const body = document.body;
+  const icon = document.getElementById('theme-icon');
+  if (body.classList.contains('light-theme')) {
+    body.classList.remove('light-theme');
+    if (icon) icon.className = 'ti ti-sun';
+    localStorage.setItem('evidance_theme', 'dark');
+  } else {
+    body.classList.add('light-theme');
+    if (icon) icon.className = 'ti ti-moon';
+    localStorage.setItem('evidance_theme', 'light');
+  }
+}
+
+function loadTheme() {
+  const theme = localStorage.getItem('evidance_theme') || 'dark';
+  if (theme === 'light') {
+    document.body.classList.add('light-theme');
+    const icon = document.getElementById('theme-icon');
+    if (icon) icon.className = 'ti ti-moon';
+  }
+}
+
+function toggleInfo() {
+  const p = document.getElementById('info-panel');
+  p.classList.toggle('show');
+  if (p.classList.contains('show')) p.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
 function copyAnswer() {
   if (!state.conversation.length) return;
   const last = state.conversation[state.conversation.length - 1];
   navigator.clipboard.writeText(last.answer || '').catch(() => {});
 }
 
-// ── Info panel ──
-function toggleInfo() {
-  const p = document.getElementById('info-panel');
-  p.classList.toggle('show');
-  if (p.classList.contains('show')) p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+/* ── PDF export ── */
+function showModal() {
+  if (!state.conversation.length) return;
+  document.getElementById('modal').classList.add('show');
+  setTimeout(() => document.getElementById('name-input').focus(), 100);
+}
+function hideModal() { document.getElementById('modal').classList.remove('show'); }
+function hideModalOutside(e) { if (e.target === document.getElementById('modal')) hideModal(); }
+async function confirmPDF() {
+  if (!state.conversation.length) return;
+  const name = document.getElementById('name-input').value.trim() || 'Anonymous';
+  try {
+    const r = await fetch('/api/pdf/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+      body: JSON.stringify({
+        history: state.conversation.map(t => ({ question:t.question, answer:t.answer, sources:t.sources, confidence:t.confidence, drugs:t.drugs })),
+        name,
+      }),
+    });
+    if (!r.ok) { hideModal(); showTurnError('PDF generation failed (' + r.status + ')'); return; }
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url; link.download = 'evidance-report.pdf';
+    document.body.appendChild(link); link.click();
+    document.body.removeChild(link); URL.revokeObjectURL(url);
+    hideModal();
+  } catch(err) { hideModal(); showTurnError('Network error: ' + err.message); }
 }
 
-// ── CSRF helper ──
-function getCookie(name) {
-  const val   = `; ${document.cookie}`;
-  const parts = val.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-  return '';
-}
-
-// ── User settings display ──
+/* ── User display ── */
 function loadUser() {
-  const name     = localStorage.getItem('evidance_user') || 'Guest';
-  const initials = name === 'Guest' ? '?' :
-    name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const name = localStorage.getItem('evidance_user') || 'Guest';
+  const initials = name === 'Guest' ? '?' : name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('user-display').textContent = name;
-  document.getElementById('user-avatar').textContent  = initials;
+  document.getElementById('user-avatar').textContent = initials;
 }
-document.getElementById('name-input').addEventListener('change', function () {
-  if (this.value.trim()) {
-    localStorage.setItem('evidance_user', this.value.trim());
-    loadUser();
-  }
+document.getElementById('name-input').addEventListener('change', function() {
+  if (this.value.trim()) { localStorage.setItem('evidance_user', this.value.trim()); loadUser(); }
 });
 
-// ── Initialise ──
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
 loadTheme();
 renderSidebarThreads();
 loadUser();
+loadSettings();
+initCanvas();
 </script>
-
 </body>
 </html>
